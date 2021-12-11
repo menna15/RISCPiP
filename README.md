@@ -16,7 +16,8 @@ IN       -->7\
 JC       -->8\
 JZ       -->9\
 JN       -->10\
-RET      -->11
+RET      -->11\
+others   -->12
 
 # other important signals
 branch_signal --> will send to the control unit in case of branching
