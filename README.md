@@ -33,20 +33,20 @@ EX :in std_logic_vector(3 downto 0)
 M,WR:in std_logic_vector(2 downto 0)
 PC :in std_logic_vector(31 downto 0)
 
---additional buffers for hazard detection unit\
+--additional buffers for hazard detection unit
 
-R_src1_address,R_src2_address,R_dest_address :in std_logic_vector(2 downto 0)\
+R_src1_address,R_src2_address,R_dest_address :in std_logic_vector(2 downto 0)
 
---input from forwarding unit\
+--input from forwarding unit
 
-forwarding_unit_selector:in std_logic_vector(1 downto 0)\
+forwarding_unit_selector:in std_logic_vector(1 downto 0)
 
---for registers in this stage\
+--for registers in this stage
 
-clk,reset,en:in std_logic\
+clk,reset,en:in std_logic
 
---flags from stack in case ret operation \
-C_Z_N_flags_from_stack:in std_logic_vector(2 downto 0)\
+--flags from stack in case ret operation 
+C_Z_N_flags_from_stack:in std_logic_vector(2 downto 0)
 
 # OUTPUTS\
 
