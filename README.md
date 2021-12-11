@@ -45,14 +45,14 @@ forwarding_unit_selector:in std_logic_vector(1 downto 0)
 
 clk,reset,en:in std_logic
 
---flags from stack in case ret operation 
+--flags from stack in case ret operation \
 C_Z_N_flags_from_stack:in std_logic_vector(2 downto 0)
 
 # OUTPUTS
 
-M_out,WR_out,R_dest_address_out:out std_logic_vector(2 downto 0)
-ALU_out,R_src1_out: out std_logic_vector(15 downto 0)
-PC_flages: out std_logic_vector(34 downto 0)
+M_out,WR_out,R_dest_address_out:out std_logic_vector(2 downto 0) \
+ALU_out,R_src1_out: out std_logic_vector(15 downto 0) \
+PC_flages: out std_logic_vector(34 downto 0) \
 branch_signal:out std_logic)
 
 
