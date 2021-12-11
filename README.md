@@ -25,13 +25,13 @@ branch_signal --> will send to the control unit in case of branching
 # side notes
 i consider that INC affect carry flag but the TA doesn't say that exceplicitly in the document 
 # INPUTS
-IN_port,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value:in std_logic_vector(15 downto 0)\
+IN_port,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value:in std_logic_vector(15 downto 0)
 
---EX & M & WR signals\
+--EX & M & WR signals
 
-EX :in std_logic_vector(3 downto 0)\
-M,WR:in std_logic_vector(2 downto 0)\
-PC :in std_logic_vector(31 downto 0)\
+EX :in std_logic_vector(3 downto 0)
+M,WR:in std_logic_vector(2 downto 0)
+PC :in std_logic_vector(31 downto 0)
 
 --additional buffers for hazard detection unit\
 
