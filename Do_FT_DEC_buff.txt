@@ -1,0 +1,22 @@
+vsim -gui work.fetch_decode_buffer
+add wave -position insertpoint  \
+sim:/fetch_decode_buffer/instruction \
+sim:/fetch_decode_buffer/clk \
+sim:/fetch_decode_buffer/flush_signal \
+sim:/fetch_decode_buffer/immediate_signal \
+sim:/fetch_decode_buffer/opcode \
+sim:/fetch_decode_buffer/reg_src_1_address \
+sim:/fetch_decode_buffer/reg_src_2_address \
+sim:/fetch_decode_buffer/reg_dst_address \
+sim:/fetch_decode_buffer/int_index \
+sim:/fetch_decode_buffer/out_immediate_signal
+
+force -freeze sim:/fetch_decode_buffer/instruction 16#afd1 0
+force -freeze sim:/fetch_decode_buffer/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/fetch_decode_buffer/flush_signal 0 0
+force -freeze sim:/fetch_decode_buffer/immediate_signal 0 0
+run
+force -freeze sim:/fetch_decode_buffer/immediate_signal 1 0
+run
+force -freeze sim:/fetch_decode_buffer/flush_signal 1 0
+run

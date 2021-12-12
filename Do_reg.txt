@@ -1,0 +1,17 @@
+vsim -gui work.reg(reg_a)
+add wave -position end  sim:/reg/n
+add wave -position end  sim:/reg/input
+add wave -position end  sim:/reg/en
+add wave -position end  sim:/reg/clk
+add wave -position end  sim:/reg/reset
+add wave -position end  sim:/reg/output
+force -freeze sim:/reg/input 16#12345678 0
+force -freeze sim:/reg/clk 0 0, 1 {50 ps} -r 100
+run
+force -freeze sim:/reg/en 1 0
+run
+force -freeze sim:/reg/reset 1 0
+run
+force -freeze sim:/reg/input 0101011001111011 0
+force -freeze sim:/reg/reset 0 0
+run

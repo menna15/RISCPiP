@@ -1,0 +1,22 @@
+vsim -gui work.memory_write_back_buffer
+# Loading work.memory_write_back_buffer(memory_write_back_buffer_a)
+add wave -position end  sim:/memory_write_back_buffer/ALU_out
+add wave -position end  sim:/memory_write_back_buffer/memory_out
+add wave -position end  sim:/memory_write_back_buffer/clk
+add wave -position end  sim:/memory_write_back_buffer/write_back_signal
+add wave -position end  sim:/memory_write_back_buffer/load_from_memory_signal
+add wave -position end  sim:/memory_write_back_buffer/reg_dst_address
+add wave -position end  sim:/memory_write_back_buffer/reg_dst_address_out
+add wave -position end  sim:/memory_write_back_buffer/write_back_data_out
+add wave -position end  sim:/memory_write_back_buffer/write_back_signal_out
+force -freeze sim:/memory_write_back_buffer/ALU_out 16#AAAA 0
+force -freeze sim:/memory_write_back_buffer/memory_out 16#BBBB 0
+force -freeze sim:/memory_write_back_buffer/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/memory_write_back_buffer/load_from_memory_signal 1 0
+force -freeze sim:/memory_write_back_buffer/reg_dst_address 110 0
+force -freeze sim:/memory_write_back_buffer/write_back_signal 1 0
+run
+force -freeze sim:/memory_write_back_buffer/load_from_memory_signal 0 0
+force -freeze sim:/memory_write_back_buffer/write_back_signal 0 0
+run
+run

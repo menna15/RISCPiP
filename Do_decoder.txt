@@ -1,0 +1,14 @@
+vsim -gui work.decoder
+add wave -position end  sim:/decoder/selector
+add wave -position end  sim:/decoder/reset
+add wave -position end  sim:/decoder/output
+force -freeze sim:/decoder/reset 1 0
+force -freeze sim:/decoder/selector 001 0
+run
+force -freeze sim:/decoder/reset 0 0
+force -freeze sim:/decoder/selector 000 0
+run
+force -freeze sim:/decoder/selector 100 0
+run
+force -freeze sim:/decoder/selector 110 0
+run

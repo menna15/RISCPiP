@@ -1,0 +1,38 @@
+vsim -gui work.reg_file
+add wave -position end  sim:/reg_file/src_1_selector
+add wave -position end  sim:/reg_file/src_2_selector
+add wave -position end  sim:/reg_file/dst_selector
+add wave -position end  sim:/reg_file/dst_data
+add wave -position end  sim:/reg_file/write_signal
+add wave -position end  sim:/reg_file/clk
+add wave -position end  sim:/reg_file/reset
+add wave -position end  sim:/reg_file/output_src_1
+add wave -position end  sim:/reg_file/output_src_2
+add wave -position end  sim:/reg_file/reg0_data
+add wave -position end  sim:/reg_file/reg1_data
+add wave -position end  sim:/reg_file/reg2_data
+add wave -position end  sim:/reg_file/reg3_data
+add wave -position end  sim:/reg_file/reg4_data
+add wave -position end  sim:/reg_file/reg5_data
+add wave -position end  sim:/reg_file/reg6_data
+add wave -position end  sim:/reg_file/reg7_data
+add wave -position end  sim:/reg_file/destination_decode
+add wave -position end  sim:/reg_file/src_1_decode
+add wave -position end  sim:/reg_file/src_2_decode
+add wave -position insertpoint  \
+sim:/reg_file/destination_decode_and_write_signal
+force -freeze sim:/reg_file/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/reg_file/reset 1 0
+run
+force -freeze sim:/reg_file/dst_data 16#3562 0
+force -freeze sim:/reg_file/dst_selector 010 0
+force -freeze sim:/reg_file/reset 0 0
+force -freeze sim:/reg_file/write_signal 1 0
+run
+force -freeze sim:/reg_file/src_2_selector 010 0
+run
+force -freeze sim:/reg_file/dst_data 0010110101101110 0
+force -freeze sim:/reg_file/dst_selector 111 0
+run
+force -freeze sim:/reg_file/src_1_selector 111 0
+run
