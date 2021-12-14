@@ -4,6 +4,7 @@ sim:/fetch_decode_buffer/instruction \
 sim:/fetch_decode_buffer/clk \
 sim:/fetch_decode_buffer/flush_signal \
 sim:/fetch_decode_buffer/immediate_signal \
+sim:/fetch_decode_buffer/stall_signal \
 sim:/fetch_decode_buffer/opcode \
 sim:/fetch_decode_buffer/reg_src_1_address \
 sim:/fetch_decode_buffer/reg_src_2_address \
@@ -19,4 +20,16 @@ run
 force -freeze sim:/fetch_decode_buffer/immediate_signal 1 0
 run
 force -freeze sim:/fetch_decode_buffer/flush_signal 1 0
+run
+force -freeze sim:/fetch_decode_buffer/instruction 1010111100100001 0
+force -freeze sim:/fetch_decode_buffer/flush_signal 0 0
+force -freeze sim:/fetch_decode_buffer/stall_signal 1 0
+run
+run
+force -freeze sim:/fetch_decode_buffer/stall_signal 0 0
+run
+run
+force -freeze sim:/fetch_decode_buffer/stall_signal 1 0
+force -freeze sim:/fetch_decode_buffer/instruction 1010111100100000 0
+run
 run
