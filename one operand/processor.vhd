@@ -10,12 +10,24 @@ entity processor is
           reset : std_logic;
           instruction : std_logic_vector(15 downto 0);
           immediate   : std_logic;  -- added as input untill fetch stage be ready then will be taken as input from it --
-          exception_flag   : std_logic_vector(1 downto 0) -- added as input untill memory stage be ready then will be taken as input from it --
-        );               
+          exception_flag   : std_logic_vector(1 downto 0); -- added as input untill memory stage be ready then will be taken as input from it --
+          inPort           : std_logic_vector(15 downto 0); -- added as input untill decode stage be ready then will be taken as input from it --
+          R_src1,R_src2    : std_logic_vector(15 downto 0); -- added as input untill decode stage be ready then will be taken as input from it --
+          
+          ALU_TO_ALU,MEM_TO_ALU :std_logic_vector(15 downto 0); -- added as input untill forwarding unit be ready then will be taken as input from buffers --
+          IMM_value             :std_logic_vector(15 downto 0); -- added as input untill fetch stage be ready then will be taken as input from it --
+          
+          PC  : std_logic_vector(31 downto 0);                  -- added as input untill fetch stage be ready then will be taken as input from it - 
+          
+          R_src1_address,R_src2_address,R_dest_address :in std_logic_vector(2 downto 0);  -- added as input untill decode stage be ready then will be taken as input from it --
+          forwarding_unit_selector:in std_logic_vector(1 downto 0); -- added as input untill forwarding unit be ready then will be taken as input from it --
+          C_Z_N_flags_from_stack  :in std_logic_vector(2 downto 0); -- added as input untill memory stage be ready then will be taken as input from it --
+);                
 end processor;
 
 architecture processor_a of processor is
 
+----------------------------------- Components --------------------------------
 component control_unit is
 	port (  
         ----- inputs ---------
@@ -48,6 +60,41 @@ component control_unit is
 
 end component;
 
+component ALUStage is
+PORT(
+--Muxes inputs
+IN_port,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value:in std_logic_vector(15 downto 0);
+
+--EX & M & WR signals
+
+EX     :in std_logic_vector(3 downto 0);
+M,WR   :in std_logic_vector(2 downto 0);
+PC     :in std_logic_vector(31 downto 0);
+
+--additional buffers for hazard detection unit
+
+R_src1_address,R_src2_address,R_dest_address :in std_logic_vector(2 downto 0);
+
+--input from forwarding unit
+
+forwarding_unit_selector        :in std_logic_vector(1 downto 0);
+
+--for registers in this stage
+
+clk,reset,en                    :in std_logic;
+
+--flags from stack in case ret operation 
+C_Z_N_flags_from_stack          :in std_logic_vector(2 downto 0);
+
+M_out,WR_out,R_dest_address_out :out std_logic_vector(2 downto 0);
+ALU_out,R_src1_out              :out std_logic_vector(15 downto 0);
+PC_flages                       :out std_logic_vector(34 downto 0);
+branch_signal                   :out std_logic); 
+end component;
+
+
+-------------------------------------------------- signals --------------------
+-- control unit --
 signal reset_out_signal     :std_logic; -- to the buffers in all stages --
 signal memRead_signal       :std_logic;
 signal memWrite_signal      :std_logic;
@@ -68,8 +115,22 @@ signal alu_selector_signal  :std_logic_vector (3 DOWNTO 0);  -- for selecting al
 
 signal exception_selector :std_logic;
 
+-- Decode --
+
+-- ALU ---
+
+signal M_out,WR_out,R_dest_address_out :std_logic_vector(2 downto 0);
+signal ALU_out,R_src1_out              :std_logic_vector(15 downto 0);
+signal PC_flages                       :std_logic_vector(34 downto 0);
+signal branch_signal                   :std_logic;
+
+-- Memory --
+
+-- WB ------
+
 begin
 
-CU : control_unit port map(clk,instruction(15 downto 11),immediate,exception_flag,reset);
+CU  : control_unit port map(clk,instruction(15 downto 11),immediate,exception_flag,reset);
         
+ALU : ALUStage     port map(inPort,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value,alu_selector_signal,memRead_signal&memWrite_signal,regFileWrite_signal,PC,R_src1_address,R_src2_address,R_dest_address,forwarding_unit_selector,reset_out_signal,C_Z_N_flags_from_stack,M_out,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal);
 end architecture;
