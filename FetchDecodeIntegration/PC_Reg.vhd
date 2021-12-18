@@ -13,9 +13,9 @@ architecture PCounterArc of PCounter is
 begin
 process(clk,reset)
 begin
-if(reset='1' and rising_edge(clk)) then
+if(reset='1' and falling_edge(clk)) then
   DataOut<=std_logic_vector(to_unsigned(0,32));
-elsif(rising_edge(clk)) then
+elsif(falling_edge(clk)) then
    DataOut<=DataIn;
 end if;
 end process ;
