@@ -133,8 +133,7 @@ signal fetch_flush_signal   :std_logic;
 signal decode_flush_signal  :std_logic; 
 signal memory_flush_signal  :std_logic; 
 signal WB_flush_signal      :std_logic; 
--- from nada: i don't need this this signal will come from write back stage
---signal regFileWrite_signal  :std_logic;                      -- register file write enable --
+signal regFileWrite_signal  :std_logic;                      -- register file write enable --
 signal imm_value_signal     :std_logic;                      -- 1 bit signals outs to fetch buffer --
 signal PC_selector_signal   :std_logic_vector (2 downto 0);
 signal stack_memory_signal  :std_logic;                      -- if 0 stack operations if 1 memory operations --
@@ -181,7 +180,11 @@ signal branch_signal                   :std_logic;
 
 begin
 
-CU    : control_unit port map(clk,opcode,immediate,exception_flag,reset);
+CU    : control_unit port map(clk,opcode,immediate,exception_flag,reset,reset_out_signal,memRead_signal,memWrite_signal,inPort_signal,
+                              outPort_signal,interrupt_signal,do_32_memory_signal,do_32_fetch_signal,fetch_flush_signal,decode_flush_signal,
+                              memory_flush_signal,WB_flush_signal,regFileWrite_signal,imm_value_signal,PC_selector_signal,stack_memory_signal,
+                              alu_selector_signal,exception_selector);
+
 Fetch : FetchStage port map(clk,reset,instruction); 
 Decode: DecodeStage port map(reset, clk, fetch_flush_signal, Fetch_stall_signal, imm_value_signal, write_signal, instruction,
 				write_back_data, R_src1, R_src2, opcode, R_src1_address, R_src2_address,
