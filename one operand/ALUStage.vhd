@@ -14,7 +14,8 @@ IN_port,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value:in std_logic_vector(15 dow
 --EX & M & WR signals
 
 EX :in std_logic_vector(3 downto 0);
-M,WR:in std_logic_vector(2 downto 0);
+M:in std_logic_vector(2 downto 0);
+WR:in std_logic_vector(0 downto 0);
 PC :in std_logic_vector(31 downto 0);
 
 --additional buffers for hazard detection unit
@@ -34,7 +35,9 @@ C_Z_N_flags_from_stack:in std_logic_vector(2 downto 0);
 
 -------------------------------OUTPUTS-------------------------
 
-M_out,WR_out,R_dest_address_out:out std_logic_vector(2 downto 0);
+M_out:out std_logic_vector(2 downto 0);
+WR_out:out std_logic_vector(0 downto 0);
+R_dest_address_out:out std_logic_vector(2 downto 0);
 ALU_out,R_src1_out: out std_logic_vector(15 downto 0);
 PC_flages: out std_logic_vector(34 downto 0);
 branch_signal:out std_logic); 
@@ -50,14 +53,16 @@ component ID_EX is
 port (
 -------------declare inputs-------------
 
-WR,M,R_src1_address,R_src2_address,R_dest_address:in std_logic_vector (2 downto 0);
+WR:in std_logic_vector (0 downto 0);
+M,R_src1_address,R_src2_address,R_dest_address:in std_logic_vector (2 downto 0);
 EX:in std_logic_vector (3 downto 0);
 in_port,R_src1,R_src2:in std_logic_vector (15 downto 0);
 PC:in std_logic_vector (31 downto 0);
 clk,reset,en:in std_logic;
 -------------declare outputs-------------
 
-WR_out,M_out,R_src1_address_out,R_src2_address_out,R_dest_address_out:out std_logic_vector (2 downto 0);
+WR_out:out std_logic_vector (0 downto 0);
+M_out,R_src1_address_out,R_src2_address_out,R_dest_address_out:out std_logic_vector (2 downto 0);
 EX_out:out std_logic_vector (3 downto 0);
 in_port_out,R_src1_out,R_src2_out:out std_logic_vector (15 downto 0);
 PC_out:out std_logic_vector (31 downto 0));
@@ -103,7 +108,8 @@ end component;
 
 Signal IN_port_wire,R_src1_wire,R_src2_wire,ALU_TO_ALU_wire,MEM_TO_ALU_wire:std_logic_vector(15 downto 0);
 Signal MUX_2_out_wire,ALU_1_OP_wire,ALU_2_OP_wire:std_logic_vector(15 downto 0);
-Signal WR_wire,M_wire,R_src1_address_wire,R_src2_address_wire,R_dest_address_wire: std_logic_vector(2 downto 0);
+Signal WR_wire: std_logic_vector(0 downto 0);
+Signal M_wire,R_src1_address_wire,R_src2_address_wire,R_dest_address_wire: std_logic_vector(2 downto 0);
 Signal EX_wire:std_logic_vector(3 downto 0);
 Signal ret_signal,inport_signal:std_logic;
 Signal PC_wire:std_logic_vector(31 downto 0);

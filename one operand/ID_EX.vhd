@@ -6,7 +6,8 @@ entity ID_EX is
 port (
 -------------declare inputs-------------
 
-WR,M,R_src1_address,R_src2_address,R_dest_address:in std_logic_vector (2 downto 0);
+M,R_src1_address,R_src2_address,R_dest_address:in std_logic_vector (2 downto 0);
+WR:in std_logic_vector(0 downto 0);
 EX:in std_logic_vector (3 downto 0);
 in_port,R_src1,R_src2:in std_logic_vector (15 downto 0);
 PC:in std_logic_vector (31 downto 0);
@@ -14,7 +15,8 @@ clk,reset,en:in std_logic;
 
 -------------declare outputs-------------
 
-WR_out,M_out,R_src1_address_out,R_src2_address_out,R_dest_address_out:out std_logic_vector (2 downto 0);
+M_out,R_src1_address_out,R_src2_address_out,R_dest_address_out:out std_logic_vector (2 downto 0);
+WR_out:out std_logic_vector(0 downto 0);
 EX_out:out std_logic_vector (3 downto 0);
 in_port_out,R_src1_out,R_src2_out:out std_logic_vector (15 downto 0);
 PC_out:out std_logic_vector (31 downto 0));
@@ -37,7 +39,7 @@ end component ;
 
 begin 
 
-reg_WR: reg generic map(word_length => 3) port map(WR,clk,reset, en,WR_out);
+reg_WR: reg generic map(word_length => 1) port map(WR,clk,reset, en,WR_out);
 reg_M: reg generic map(word_length => 3) port map(M,clk,reset, en,M_out);
 reg_EX: reg generic map (word_length => 4) port map(EX,clk,reset, en,EX_out);
 reg_IN_port: reg generic map (word_length => 16) port map(IN_port,clk,reset, en,IN_port_out);
