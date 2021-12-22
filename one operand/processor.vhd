@@ -47,7 +47,7 @@ component control_unit is
         regFileWrite  : out std_logic;                      -- register file write enable --
         imm_value     : out std_logic;                      -- 1 bit signals outs to fetch buffer --
         PC_selector   : out std_logic_vector (2 downto 0);
-        stack_memory  : out std_logic;                      -- if 0 stack operations if 1 memory operations --
+        stack_memory  : out std_logic;                      -- if 1 stack operations if 0 memory operations --
         alu_selector  : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
         exception_selector : out std_logic );
