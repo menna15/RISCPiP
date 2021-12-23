@@ -1,55 +1,51 @@
 
-Library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 --Declare register entity
- 
-entity reg is 
-generic (word_length : integer := 10); 
-port (d:in std_logic_vector (word_length-1 downto 0);
-clk,reset,en:in std_logic;
-q:out std_logic_vector (word_length-1 downto 0));
-end entity ;
 
-Library ieee;
-use ieee.std_logic_1164.all;
+ENTITY reg IS
+    GENERIC (word_length : INTEGER := 10);
+    PORT (
+        d : IN STD_LOGIC_VECTOR (word_length - 1 DOWNTO 0);
+        clk, reset, en : IN STD_LOGIC;
+        q : OUT STD_LOGIC_VECTOR (word_length - 1 DOWNTO 0));
+END ENTITY;
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 --Declare register entity
- 
-entity reg_fall_edge is 
-port (d:in std_logic;
-clk,reset,en:in std_logic;
-q:out std_logic);
-end entity ;
 
-
+ENTITY reg_fall_edge IS
+    PORT (
+        d : IN STD_LOGIC;
+        clk, reset, en : IN STD_LOGIC;
+        q : OUT STD_LOGIC);
+END ENTITY;
 --register Architecture 
 
-architecture reg_arc of reg is 
-begin 
-process(clk,reset)
-begin
-if(reset = '1') then
-    q <=(others =>'0');
-elsif rising_edge(clk) and en='1'  then    
-     q <= d;
-end if;
-end process;
-end architecture ;
-
-
+ARCHITECTURE reg_arc OF reg IS
+BEGIN
+    PROCESS (clk, reset)
+    BEGIN
+        IF (reset = '1') THEN
+            q <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND en = '1' THEN
+            q <= d;
+        END IF;
+    END PROCESS;
+END ARCHITECTURE;
 --register work on falling edge Architecture 
 
-architecture reg_fall_edge_arc of reg_fall_edge is 
-begin 
-process(clk,reset)
-begin
-if(reset = '1') then
-    q <='0';
-elsif falling_edge(clk) and en='1'  then    
-     q <= d;
-end if;
-end process;
-end architecture ;
-
-
+ARCHITECTURE reg_fall_edge_arc OF reg_fall_edge IS
+BEGIN
+    PROCESS (clk, reset)
+    BEGIN
+        IF (reset = '1') THEN
+            q <= '0';
+        ELSIF falling_edge(clk) AND en = '1' THEN
+            q <= d;
+        END IF;
+    END PROCESS;
+END ARCHITECTURE;

@@ -1,22 +1,22 @@
-Library ieee;
-use ieee.std_logic_1164.all;
-use  IEEE.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 ------------------PC Register-------------------------
-Entity PCounter is 
-port(
-DataIn : in std_logic_vector(31 downto 0);
-clk,reset : in std_logic ;
-DataOut : out std_logic_vector(31 downto 0));
-end PCounter ;
+ENTITY PCounter IS
+  PORT (
+    DataIn : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    clk, reset : IN STD_LOGIC;
+    DataOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0));
+END PCounter;
 
-architecture PCounterArc of PCounter is
-begin
-process(clk,reset)
-begin
-if(reset='1' and rising_edge(clk)) then
-  DataOut<=std_logic_vector(to_unsigned(0,32));
-elsif(rising_edge(clk)) then
-   DataOut<=DataIn;
-end if;
-end process ;
-end PCounterArc ;
+ARCHITECTURE PCounterArc OF PCounter IS
+BEGIN
+  PROCESS (clk, reset)
+  BEGIN
+    IF (reset = '1' AND rising_edge(clk)) THEN
+      DataOut <= STD_LOGIC_VECTOR(to_unsigned(0, 32));
+    ELSIF (rising_edge(clk)) THEN
+      DataOut <= DataIn;
+    END IF;
+  END PROCESS;
+END PCounterArc;

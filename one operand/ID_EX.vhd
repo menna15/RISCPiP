@@ -1,53 +1,52 @@
-Library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 --Declare ID_EX entity
-entity ID_EX is
-port (
--------------declare inputs-------------
+ENTITY ID_EX IS
+    PORT (
+        -------------declare inputs-------------
 
-M,R_src1_address,R_src2_address,R_dest_address:in std_logic_vector (2 downto 0);
-WR:in std_logic_vector(0 downto 0);
-EX:in std_logic_vector (3 downto 0);
-in_port,R_src1,R_src2:in std_logic_vector (15 downto 0);
-PC:in std_logic_vector (31 downto 0);
-clk,reset,en:in std_logic;
+        M, R_src1_address, R_src2_address, R_dest_address : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+        WR : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+        EX : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+        in_port, R_src1, R_src2 : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+        PC : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+        clk, reset, en : IN STD_LOGIC;
 
--------------declare outputs-------------
+        -------------declare outputs-------------
 
-M_out,R_src1_address_out,R_src2_address_out,R_dest_address_out:out std_logic_vector (2 downto 0);
-WR_out:out std_logic_vector(0 downto 0);
-EX_out:out std_logic_vector (3 downto 0);
-in_port_out,R_src1_out,R_src2_out:out std_logic_vector (15 downto 0);
-PC_out:out std_logic_vector (31 downto 0));
+        M_out, R_src1_address_out, R_src2_address_out, R_dest_address_out : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+        WR_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+        EX_out : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+        in_port_out, R_src1_out, R_src2_out : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+        PC_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0));
 
-end entity ;
+END ENTITY;
 
 --ID_EX Architecture 
 
-architecture ID_EX_arc of ID_EX is 
+ARCHITECTURE ID_EX_arc OF ID_EX IS
 
---declare components
+    --declare components
 
-component reg is 
-generic (word_length : integer := 10); 
-port (d:in std_logic_vector (word_length-1 downto 0);
-clk,reset,en:in std_logic;
-q:out std_logic_vector (word_length-1 downto 0));
-end component ;
+    COMPONENT reg IS
+        GENERIC (word_length : INTEGER := 10);
+        PORT (
+            d : IN STD_LOGIC_VECTOR (word_length - 1 DOWNTO 0);
+            clk, reset, en : IN STD_LOGIC;
+            q : OUT STD_LOGIC_VECTOR (word_length - 1 DOWNTO 0));
+    END COMPONENT;
+BEGIN
 
+    reg_WR : reg GENERIC MAP(word_length => 1) PORT MAP(WR, clk, reset, en, WR_out);
+    reg_M : reg GENERIC MAP(word_length => 3) PORT MAP(M, clk, reset, en, M_out);
+    reg_EX : reg GENERIC MAP(word_length => 4) PORT MAP(EX, clk, reset, en, EX_out);
+    reg_IN_port : reg GENERIC MAP(word_length => 16) PORT MAP(IN_port, clk, reset, en, IN_port_out);
+    reg_R_scr1 : reg GENERIC MAP(word_length => 16) PORT MAP(R_src1, clk, reset, en, R_src1_out);
+    reg_R_scr2 : reg GENERIC MAP(word_length => 16) PORT MAP(R_src2, clk, reset, en, R_src2_out);
+    reg_R_scr1_address : reg GENERIC MAP(word_length => 3) PORT MAP(R_src1_address, clk, reset, en, R_src1_address_out);
+    reg_R_scr2_address : reg GENERIC MAP(word_length => 3) PORT MAP(R_src2_address, clk, reset, en, R_src2_address_out);
+    reg_R_dest_address : reg GENERIC MAP(word_length => 3) PORT MAP(R_dest_address, clk, reset, en, R_dest_address_out);
+    reg_PC : reg GENERIC MAP(word_length => 32) PORT MAP(PC, clk, reset, en, PC_out);
 
-begin 
-
-reg_WR: reg generic map(word_length => 1) port map(WR,clk,reset, en,WR_out);
-reg_M: reg generic map(word_length => 3) port map(M,clk,reset, en,M_out);
-reg_EX: reg generic map (word_length => 4) port map(EX,clk,reset, en,EX_out);
-reg_IN_port: reg generic map (word_length => 16) port map(IN_port,clk,reset, en,IN_port_out);
-reg_R_scr1: reg generic map (word_length => 16) port map(R_src1,clk,reset,en,R_src1_out);
-reg_R_scr2: reg generic map (word_length => 16) port map(R_src2,clk,reset, en,R_src2_out);
-reg_R_scr1_address: reg generic map (word_length => 3) port map(R_src1_address,clk,reset, en,R_src1_address_out);
-reg_R_scr2_address: reg generic map (word_length => 3) port map(R_src2_address,clk,reset, en,R_src2_address_out);
-reg_R_dest_address: reg generic map (word_length => 3) port map(R_dest_address,clk,reset, en,R_dest_address_out);
-reg_PC: reg generic map (word_length => 32) port map(PC,clk,reset, en,PC_out);
-
-end architecture ;
+END ARCHITECTURE;

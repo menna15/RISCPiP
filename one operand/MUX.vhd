@@ -1,41 +1,42 @@
-Library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 --Mux4 with input 16 bit entity
-entity mux4 is
-port (in0,in1,in2,in3:in std_logic_vector(15 downto 0);
-sel0,sel1:in std_logic;
-out1:out std_logic_vector(15 downto 0));
-end entity;
-Library ieee;
-use ieee.std_logic_1164.all;
+ENTITY mux4 IS
+    PORT (
+        in0, in1, in2, in3 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        sel0, sel1 : IN STD_LOGIC;
+        out1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0));
+END ENTITY;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 --Mux2 with input 16 bit entity
-entity mux2 is
-generic (size : integer := 10);
-port (in0,in1:in std_logic_vector(size-1 downto 0);
-sel:in std_logic;
-out1:out std_logic_vector(size-1 downto 0));
+ENTITY mux2 IS
+    GENERIC (size : INTEGER := 10);
+    PORT (
+        in0, in1 : IN STD_LOGIC_VECTOR(size - 1 DOWNTO 0);
+        sel : IN STD_LOGIC;
+        out1 : OUT STD_LOGIC_VECTOR(size - 1 DOWNTO 0));
 
-end entity;
-
-
+END ENTITY;
 -----------------------------------------------ARCHETECTURE--------------------------------------------
 
 --mux4 architecture using dataflow model implementation
-architecture mux4_arc of  mux4 is 
-begin 
-out1<=in0 when sel0='0' and sel1='0'
-else in1 when sel0='1' and sel1='0'
-else in2 when sel0='0' and sel1='1'
-else in3 ;
-end architecture;
+ARCHITECTURE mux4_arc OF mux4 IS
+BEGIN
+    out1 <= in0 WHEN sel0 = '0' AND sel1 = '0'
+        ELSE
+        in1 WHEN sel0 = '1' AND sel1 = '0'
+        ELSE
+        in2 WHEN sel0 = '0' AND sel1 = '1'
+        ELSE
+        in3;
+END ARCHITECTURE;
 
 --mux2 architecture using dataflow model implementation
-architecture mux2_arc of  mux2 is 
-begin 
-out1<=in0 when sel='0' else in1;
-end architecture;
-
-
-
+ARCHITECTURE mux2_arc OF mux2 IS
+BEGIN
+    out1 <= in0 WHEN sel = '0' ELSE
+        in1;
+END ARCHITECTURE;

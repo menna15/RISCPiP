@@ -1,28 +1,28 @@
-Library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
 ENTITY
-reg_in_regfile IS
-GENERIC
-(n : integer := 16);
-PORT (  input: IN std_logic_vector(n-1 DOWNTO 0);
-	en, clk, reset : IN std_logic;
-	output : OUT std_logic_vector(n-1 DOWNTO 0));
+	reg_in_regfile IS
+	GENERIC (n : INTEGER := 16);
+	PORT (
+		input : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+		en, clk, reset : IN STD_LOGIC;
+		output : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0));
 END ENTITY reg_in_regfile;
 
 ARCHITECTURE
-reg_a OF reg_in_regfile IS
+	reg_a OF reg_in_regfile IS
 
-SIGNAL data : std_logic_vector(n-1 DOWNTO 0);
+	SIGNAL data : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
 
 BEGIN
 
-	PROCESS(Clk)
+	PROCESS (Clk)
 	BEGIN
-	
+
 		IF reset = '1' THEN
-			data <= (OTHERS =>'0');
-		ELSIF (falling_edge (Clk) and en = '1') THEN
+			data <= (OTHERS => '0');
+		ELSIF (falling_edge (Clk) AND en = '1') THEN
 			data <= input;
 		END IF;
 	END PROCESS;

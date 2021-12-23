@@ -1,44 +1,44 @@
-Library ieee;
-use ieee.std_logic_1164.all;
-use  IEEE.numeric_std.all;
-Entity FetchStage is 
-port(
-clk,reset : in std_logic ;
-instruction : out std_logic_vector(15 DOWNTO 0));
-end FetchStage;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
+ENTITY FetchStage IS
+       PORT (
+              clk, reset : IN STD_LOGIC;
+              instruction : OUT STD_LOGIC_VECTOR(15 DOWNTO 0));
+END FetchStage;
 
-Architecture FS_Arch of FetchStage is
-----------------Components--------------------
-----PC Reg 
-component PCounter is 
-port(
-DataIn : in std_logic_vector(31 downto 0);
-clk,reset : in std_logic ;
-DataOut : out std_logic_vector(31 downto 0));
-end component ;
-----------
+ARCHITECTURE FS_Arch OF FetchStage IS
+       ----------------Components--------------------
+       ----PC Reg 
+       COMPONENT PCounter IS
+              PORT (
+                     DataIn : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+                     clk, reset : IN STD_LOGIC;
+                     DataOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0));
+       END COMPONENT;
+       ----------
 
------PC Adder
-component PC_adder is 
-port ( A: in std_logic_vector(31 downto 0);
-       F : out std_logic_vector(31 downto 0));
-end component ;
--------------
----Instruction memory
-component InstMEM is 
-port(                               
-clk : in std_logic;               
-PC : in std_logic_vector(31 downto 0);   
-FetchedInstruction : out std_logic_vector(15 downto 0));
-end component ;
------------------
-SIGNAL AdderIn,AdderOut,PC : std_logic_vector(31 downto 0);
-Signal inst : std_logic_vector(15 downto 0);
-begin
-AdderIn<=PC; 
-PCReg: PCounter port map(AdderOut,clk,reset,PC);
-PCAdder : PC_adder port map(AdderIn,AdderOut);
-memory : InstMEM port map(clk,PC,inst) ;
-instruction<=inst;
-end FS_Arch;
-  
+       -----PC Adder
+       COMPONENT PC_adder IS
+              PORT (
+                     A : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+                     F : OUT STD_LOGIC_VECTOR(31 DOWNTO 0));
+       END COMPONENT;
+       -------------
+       ---Instruction memory
+       COMPONENT InstMEM IS
+              PORT (
+                     clk : IN STD_LOGIC;
+                     PC : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+                     FetchedInstruction : OUT STD_LOGIC_VECTOR(15 DOWNTO 0));
+       END COMPONENT;
+       -----------------
+       SIGNAL AdderIn, AdderOut, PC : STD_LOGIC_VECTOR(31 DOWNTO 0);
+       SIGNAL inst : STD_LOGIC_VECTOR(15 DOWNTO 0);
+BEGIN
+       AdderIn <= PC;
+       PCReg : PCounter PORT MAP(AdderOut, clk, reset, PC);
+       PCAdder : PC_adder PORT MAP(AdderIn, AdderOut);
+       memory : InstMEM PORT MAP(clk, PC, inst);
+       instruction <= inst;
+END FS_Arch;
