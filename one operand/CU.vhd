@@ -84,7 +84,7 @@ begin
     end process;
     
     operation <= to_integer(unsigned(opcode));
-    
+    reset_out <= '1' when (reset_in = '1') else '0';
 
     memRead  <= '1' when (operation = LDD or operation = POP ) else '0' ;
     memWrite <= '1' when (operation = PUSH or operation = STD) else '0' ;

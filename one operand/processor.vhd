@@ -6,16 +6,10 @@ USE work.ALL;
 
 ENTITY processor IS
         PORT (
-                clk : STD_LOGIC;
-                reset : STD_LOGIC;
-                exception_flag : STD_LOGIC_VECTOR(1 DOWNTO 0); -- added as input untill memory stage be ready then will be taken as input from it --
-                inPort : STD_LOGIC_VECTOR(15 DOWNTO 0); -- added as input untill decode stage be ready then will be taken as input from it --
-
-                ALU_TO_ALU, MEM_TO_ALU : STD_LOGIC_VECTOR(15 DOWNTO 0); -- added as input untill forwarding unit be ready then will be taken as input from buffers --
-                PC : STD_LOGIC_VECTOR(31 DOWNTO 0); -- added as input untill fetch stage be ready then will be taken as input from it - / -- it will still input till next phase 
-
-                forwarding_unit_selector : IN STD_LOGIC_VECTOR(1 DOWNTO 0); -- added as input untill forwarding unit be ready then will be taken as input from it --
-                C_Z_N_flags_from_stack : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- added as input untill memory stage be ready then will be taken as input from it --
+                clk :IN STD_LOGIC;
+                reset   :IN STD_LOGIC;
+                inPort  :IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+                outPort : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
         );
 END processor;
 
@@ -63,7 +57,7 @@ ARCHITECTURE processor_a OF processor IS
         ----Decode stage component
         COMPONENT DecodeStage IS
                 PORT (
-                        reset, clk, flush_signal, stall_signal, imm_value, write_signal : IN STD_LOGIC;
+                        reset, clk, flush_signal, stall_signal, immediate_signal, write_signal : IN STD_LOGIC;
                         inst : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
                         write_back_data : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
                         output_src_1, output_src_2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -115,6 +109,36 @@ ARCHITECTURE processor_a OF processor IS
                         branch_signal : OUT STD_LOGIC);
         END COMPONENT;
         -------------------------
+        -- Memory buffer --------
+        COMPONENT alu_memory_buffer IS
+        PORT (  clk,stall_signal,flush_signal: IN std_logic;
+	M_IN : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        WB_IN : IN STD_LOGIC;
+        R_dest_address_in : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        ALU_in, R_src1_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        PC_flags_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);            --pc & flags to be pushed into memory.
+        branch_signal : IN STD_LOGIC;
+
+	M_OUT : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+        WB_OUT : OUT STD_LOGIC;
+	R_dest_address_OUT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        R_src1_OUT : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+        PC_flags_OUT,ALU_OUT : OUT std_logic_vector(31 downto 0));    --DataIn1 carries data to be read if it is a 16-bit operation , DataIn1&DataIn2 when it is a 32-bi.
+        END COMPONENT;
+        -- Memory component -----
+        COMPONENT MEMStage is 
+        port(
+        MEM_Read,MEM_Write,                                    --Read& write enables
+        Reset,                                                 --Reset Signal to make SP = 2^20-1
+        Do32,                                                  --Signal to determine if the operation reads/writes 16 or 32 bits
+        clk,
+        StackSignal: in std_logic;                             --Signal to determine is it a stack operation or memory
+        ALU_out :in std_logic_vector(31 downto 0); 
+        R_src1_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        PC_flags_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);  --DataOut1 carries data to be written if it is a 16-bit operation ,DataOut1&DataOut2 when it is a 32-bi.
+        ExceptionFlag : out std_logic_vector(1 downto 0); 
+        DO1,DO2 : OUT std_logic_vector(15 downto 0));     
+        end COMPONENT ;
         ----Write Back stage component
         COMPONENT memory_write_back_buffer IS
                 GENERIC (n : INTEGER := 16);
@@ -143,6 +167,7 @@ ARCHITECTURE processor_a OF processor IS
         SIGNAL memory_flush_signal : STD_LOGIC;
         SIGNAL WB_flush_signal : STD_LOGIC;
         SIGNAL regFileWrite_signal : STD_LOGIC; -- register file write enable --
+        SIGNAL regFileWrite_signal_alu :STD_LOGIC_VECTOR (0 DOWNTO 0); -- register file write enable --
         SIGNAL imm_value_signal : STD_LOGIC; -- 1 bit signals outs to fetch buffer --
         SIGNAL PC_selector_signal : STD_LOGIC_VECTOR (2 DOWNTO 0);
         SIGNAL stack_memory_signal : STD_LOGIC; -- if 0 stack operations if 1 memory operations --
@@ -168,20 +193,27 @@ ARCHITECTURE processor_a OF processor IS
 
         -- ALU ---
 
-        SIGNAL M_out, R_dest_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
-        SIGNAL WR_out : STD_LOGIC;
-        SIGNAL ALU_out, R_src1_out : STD_LOGIC_VECTOR(15 DOWNTO 0);
+        SIGNAL R_dest_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
+        SIGNAL memory_signals : STD_LOGIC_VECTOR (2 DOWNTO 0);
+        SIGNAL C_Z_N_flags_from_stack : STD_LOGIC_VECTOR (2 DOWNTO 0);
+        SIGNAL Mout : STD_LOGIC_VECTOR(2 DOWNTO 0);
+        SIGNAL WR_out : STD_LOGIC_VECTOR(0 DOWNTO 0);
+        SIGNAL ALU_out , R_src1_out: STD_LOGIC_VECTOR(15 DOWNTO 0);
         SIGNAL PC_flages : STD_LOGIC_VECTOR(34 DOWNTO 0);
         SIGNAL branch_signal : STD_LOGIC;
 
         -- Memory --
-
+        -- Memory buffer signals -------
+        SIGNAL M_OUT  : STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL WB_OUT : STD_LOGIC;
+        SIGNAL R_dest_address_OUT_memory : STD_LOGIC_VECTOR(2 DOWNTO 0);
+        SIGNAL R_src1_OUT_memory : STD_LOGIC_VECTOR(15 DOWNTO 0);
+        SIGNAL PC_flags_OUT, ALU_OUT_memory : std_logic_vector(31 downto 0);
+        ----- Memory stage ----------------------
+        SIGNAL exception_flag : STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL DO1,DO2 : std_logic_vector(15 downto 0);
+        -------------------------------------------------
         -- WB ------
-        ------this from mem stage
-        SIGNAL ALU_out_from_mem_stage, memory_out : STD_LOGIC_VECTOR(15 DOWNTO 0); -- data come from alu and memory 16 bit 
-        SIGNAL wb_signal, mem_wr_from_mem_stage : STD_LOGIC; --load_from_memory_signal => is signal that if the instruction load data from memory or not
-        SIGNAL reg_dst_address : STD_LOGIC_VECTOR(2 DOWNTO 0);
-        ----------till here
         SIGNAL reg_dst_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
         SIGNAL write_back_data_out : STD_LOGIC_VECTOR(15 DOWNTO 0);
         SIGNAL write_back_signal_out : STD_LOGIC;
@@ -194,13 +226,24 @@ BEGIN
                 outPort_signal, interrupt_signal, do_32_memory_signal, do_32_fetch_signal, fetch_flush_signal, decode_flush_signal,
                 memory_flush_signal, WB_flush_signal, regFileWrite_signal, imm_value_signal, PC_selector_signal, stack_memory_signal,
                 alu_selector_signal, exception_selector);
-
+        
+        regFileWrite_signal_alu(0) <= regFileWrite_signal;
+        memory_signals <= do_32_memory_signal&memRead_signal&memWrite_signal;
         Fetch : FetchStage PORT MAP(clk, reset, instruction);
         Decode : DecodeStage PORT MAP(
-                reset, clk, fetch_flush_signal, Fetch_stall_signal, imm_value_signal, write_back_signal_out, instruction,
+                reset, clk, fetch_flush_signal, '0', imm_value_signal, write_back_signal_out, instruction,
                 write_back_data_out, R_src1, R_src2, opcode, R_src1_address, R_src2_address,
                 R_dest_address, int_index, IMM_value, immediate);
-        -- ALU : ALUStage     port map(inPort,R_src1,R_src2,ALU_TO_ALU,MEM_TO_ALU,IMM_value,alu_selector_signal,memRead_signal&memWrite_signal,regFileWrite_signal,PC,R_src1_address,R_src2_address,R_dest_address,forwarding_unit_selector,reset_out_signal,C_Z_N_flags_from_stack,M_out,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal);
-        -- Memory :
-        WB : memory_write_back_buffer PORT MAP(ALU_out_from_mem_stage, memory_out, clk, wb_signal, mem_wr_from_mem_stage, reg_dst_address, reg_dst_address_out, write_back_data_out, write_back_signal_out);
-END ARCHITECTURE;
+
+        ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,"00000000000000000000000000000000",
+        R_src1_address,R_src2_address,R_dest_address,"00",clk,reset_out_signal,'1',C_Z_N_flags_from_stack,Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal);
+        
+        Memory_buffer : alu_memory_buffer PORT MAP (clk,'0',memory_flush_signal,Mout(1 downto 0),WR_out(0),R_dest_address_out ,ALU_out, R_src1_out, 
+        PC_flages(31 downto 0), branch_signal,M_OUT ,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
+        
+        Memory_stage  : MEMStage  PORT MAP(M_OUT(1),M_OUT(0),reset_out_signal,Mout(2),clk,stack_memory_signal,ALU_OUT_memory,R_src1_OUT_memory,PC_flags_OUT ,exception_flag,DO1,DO2);
+        WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
+
+
+        outPort <= R_src1 when outPort_signal = '1' else (OTHERS =>'Z');
+        END ARCHITECTURE;
