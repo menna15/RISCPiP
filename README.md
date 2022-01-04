@@ -5,19 +5,20 @@ M-->Memory signal from the control unit is 3 bits (can be modified)\
 WR-->Writeback signal from the control unit is 3 bits (can be modified)\
 Ex-->Execution signal from the control unit is 4 bits (can be modified)
 # Execution Signals excpected to be as follow:
-SETC     -->0\
+SETC     -->14\
 NOT      -->1\
 INC      -->2\
 ADD      -->3\
 LDD,STD  -->4\
-AND      -->5\
-IADD     -->6\
-IN       -->7\
-JC       -->8\
-JZ       -->9\
-JN       -->10\
-RET      -->11\
-others   -->12
+SUB      -->5\
+AND      -->6\
+IADD     -->7\
+IN       -->8\
+JC       -->9\
+JZ       -->10\
+JN       -->11\
+RET      -->12\
+others   -->13
 
 # other important signals
 branch_signal --> will send to the control unit in case of branching
