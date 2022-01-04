@@ -100,7 +100,7 @@ BEGIN
 
     -------------------------------------------------SET FLAGS REGISTERS ENABLE---------------------------------------------
     --we put the condition of or EX(5) to enble registers in case we will take the flags from stack 
-    flags_register_enable(0) <= '1' WHEN EX = "1110" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0111" OR EX = "1100" ELSE
+    flags_register_enable(0) <= '1' WHEN EX = "1101" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0111" OR EX = "1100" ELSE
     '0';
     flags_register_enable(1) <= '1' WHEN EX = "0001" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0110" OR EX = "0111" OR EX = "1100" ELSE
     '0';
@@ -112,7 +112,7 @@ BEGIN
     F <= F_wire;
     ---------------------------------------------------------SET FLAGS------------------------------------------------------
     --one case we won't get the carry from full adder when operation is SETC 
-    C_Z_N_flags(0) <= '1' WHEN EX = "1110" ELSE
+    C_Z_N_flags(0) <= '1' WHEN EX = "1101" ELSE
     cout;
     C_Z_N_flags(1) <= '1' WHEN F_wire = x"0000" ELSE
     '0';

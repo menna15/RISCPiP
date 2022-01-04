@@ -109,7 +109,7 @@ begin
 
 
 
-    alu_selector <= "1110" when (operation = SETC) else
+    alu_selector <= "1101" when (operation = SETC) else
         "0001" when (operation = NOT_OP) else
         "0010" when (operation = INC)    else
         "0011" when (operation = ADD)    else
