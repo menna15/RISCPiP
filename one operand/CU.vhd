@@ -4,33 +4,39 @@ use ieee.numeric_std.all;
 
 entity control_unit is                    
     Port (   
-        ----- inputs ---------
-        clk             : in std_logic;
-        opcode          : in std_logic_vector(4 downto 0);
-        immediate_value : in std_logic ;  -- 1 bit signal comes from fetch stage --
-        exception_flag  : in std_logic_vector(1 downto 0) ;
-        -- reset --
-        reset_in     : in std_logic;  -- from Processor --
-        reset_out    : out std_logic; -- to the buffers in all stages --
-        ---- outputs ---------
-        memRead       : out std_logic;
-        memWrite      : out std_logic;
-        inPort        : out std_logic;
-        outPort       : out std_logic;
-        interrupt     : out std_logic;                           -- interrupt signal to the mux in the fetch stage --
-        do_32_memory  : out std_logic;                           -- signal to the memory to decide if it will read 32 bits or 16 bits --
-        do_32_fetch   : out std_logic;                           -- signal to the fetch to decide if it will read 32 bits or 16 bits --
-        fetch_flush   : out std_logic; 
-        decode_flush  : out std_logic; 
-        memory_flush  : out std_logic; 
-        WB_flush      : out std_logic; 
-        regFileWrite  : out std_logic;                      -- register file write enable --
-        imm_value     : out std_logic;                      -- 1 bit signals outs to fetch buffer --
-        PC_selector   : out std_logic_vector (2 downto 0);
-        stack_memory  : out std_logic;                      -- if 1 stack operations if 0 memory operations --
-        alu_selector  : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
+  ----- inputs ---------
+  clk             : in std_logic;
+  opcode          : in std_logic_vector(4 downto 0); 
+  immediate_value : in std_logic ;                    -- 1 bit signal comes from fetch stage --
+  exception_flag  : in std_logic_vector(1 downto 0) ; -- input from memory to seclect if exception 1 or exception 2 or no exception happened --
+  -- reset --
+  reset_in     : in std_logic;                        -- from Processor --
+  ---- outputs ---------
+  reset_out     : out std_logic;                       -- to the buffers in all stages --
+  -- pc_freeze     : out std_logic;                       -- freeze Pc incase of load use case.
+  
+  memRead       : out std_logic;
+  memWrite      : out std_logic;
+  inPort        : out std_logic;
+  outPort       : out std_logic;
+  interrupt     : out std_logic;                           -- interrupt signal to the mux in the fetch stage --
+ ---- read 32 or 16 signals----
+  do_32_memory  : out std_logic;                           -- signal to the memory to decide if it will read 32 bits or 16 bits --
+  do_32_fetch   : out std_logic;                           -- signal to the fetch to decide if it will read 32 bits or 16 bits --
+  -- flushing signals ----------
+  fetch_flush   : out std_logic;                           -- flush signal to fetch/decode buffer incase of reset = 1 and the following cycle also because 
+                                                           --  if reset = 1 reading the new value of the PC will be done in 2 cycles --
+  decode_flush  : out std_logic;                           -- flush signal to decode/exec buffer incase of reset = 1 --
+  memory_flush  : out std_logic;                           -- flush signal to exec/memory buffer incase of reset = 1 --
+  WB_flush      : out std_logic;                           -- flush signal to memory/WB buffer incase of reset = 1 --
+  
+  regFileWrite_en  : out std_logic;                      -- register file write enable --
+  imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
+  PC_selector      : out std_logic_vector (2 downto 0);  -- selector of the mux that determine the value of PC ---
+  stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
+  alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
-        exception_selector : out std_logic
+  exception_selector : out std_logic                      -- for the selector of the mux of the exception depend on exception number from exception flag input --
 
 
 
@@ -127,9 +133,16 @@ begin
         exception_selector <= '0' when (exception_flag = "01") else
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --
         
+        imm_value    <= immediate_value ;
+
+        -- comment dol ya nada l7d ma t7otii el port map
+        -- pc_freeze    <= '1' when (load_use = '1' or operation = HLT) else '0';
+
+
+        load_flag    <= '1' when (operation = LDD or operation = LDM) else '0';
         do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
         do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
-        fetch_flush  <= '1' when (reset_in = '1' or temp_counter = '1') else '0';
+        fetch_flush  <= '1' when (reset_in = '1' or temp_counter = '1'or operation = HLT) else '0';
         decode_flush <= '1' when (reset_in = '1') else '0';
         memory_flush <= '1' when (reset_in = '1') else '0';
         WB_flush     <= '1' when (reset_in = '1') else '0';
