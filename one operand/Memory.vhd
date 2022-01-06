@@ -20,23 +20,23 @@ SIGNAL ram : ram_type ;
 begin
 process(clk)
 begin                                                                              --Throughs an exception when:
-if(rising_edge(clk) and  to_integer(unsigned(Address)) > 65280 and StackSignal='0')then --Address out of memory range. 
+if(falling_edge(clk) and  to_integer(unsigned(Address)) > 65280 and StackSignal='0')then --Address out of memory range. 
 ExceptionFlag<="01";
-elsif (rising_edge(clk) and to_integer(unsigned(Address)) > 1048575 and StackSignal='1' and MEM_Read ='1')then --Pop an empty stack.
+elsif (falling_edge(clk) and to_integer(unsigned(Address)) > 1048575 and StackSignal='1' and MEM_Read ='1')then --Pop an empty stack.
 ExceptionFlag<="10";
 else 
    ExceptionFlag<="00";
-   if(rising_edge(clk) and MEM_Write='1' and Do32 ='0') then 
+   if(falling_edge(clk) and MEM_Write='1' and Do32 ='0') then 
    ram(to_integer(unsigned(Address)))<=DataIn1;
    
-  elsif(rising_edge(clk) and MEM_Write='1' and Do32 ='1') then
+  elsif(falling_edge(clk) and MEM_Write='1' and Do32 ='1') then
    ram(to_integer(unsigned(Address)))<=DataIn1;         --Push first 16-bit data in the lower address in stack   | DataIn2 | Address-1
    ram(to_integer(unsigned(Address))-1)<=DataIn2;       --Push second 16-bit data in the upper address in stack  | DataIn1 | Address
    end if;                                                 --                                                    |_________|
 
-   if (rising_edge(clk) and MEM_Read='1' and Do32 ='0' ) then 
+   if (falling_edge(clk) and MEM_Read='1' and Do32 ='0' ) then 
      DataOut1<=ram(to_integer(unsigned(Address)));
-  elsif (rising_edge(clk) and MEM_Read='1' and Do32 ='1') then
+  elsif (falling_edge(clk) and MEM_Read='1' and Do32 ='1') then
     DataOut1<=ram(to_integer(unsigned(Address))) ;   --Pop data in the lower address in stack to be DataOut1   | DataOut2 | Address-1
     DataOut2<=ram(to_integer(unsigned(Address))-1);  --Pop data in the Upper address in stack to be DataOut2   | DataOut1 | Adderss
   end if;                                              --                                                      |__________|     

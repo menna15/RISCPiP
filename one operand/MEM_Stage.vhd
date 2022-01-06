@@ -47,30 +47,30 @@ end COMPONENT ;
 ---------------------Signals----------------------
 SIGNAL DOut1,DOut2,DataIn1,DataIn2 : std_logic_vector(15 downto 0);
 SIGNAL SP_OLD,SP_NEW,Address,AdderIn,AdderOut : std_logic_vector(31 downto 0);
-SIGNAL AdderSignal,EXP : std_logic_vector(1 downto 0);
+SIGNAL AdderSignal,EXCP : std_logic_vector(1 downto 0);
 --------------------------------------------------
 begin
 
-DataIn1 <= R_src1_in WHEN (MEM_Read = '1' and Do32 = '0') 
-	ELSE PC_flags_in (31 downto 16)WHEN (MEM_Read = '1' and Do32 = '1') ;
-DataIn2<=PC_flags_in(15 downto 0) WHEN (MEM_Read = '1' and Do32 = '1') ;
+DataIn1 <= R_src1_in WHEN (MEM_Write = '1' and Do32 = '0') 
+	ELSE PC_flags_in(15 downto 0)WHEN (MEM_Write = '1' and Do32 = '1') ;
+DataIn2<=PC_flags_in(31 downto 16) WHEN (MEM_Write = '1' and Do32 = '1') ;
 
 AdderSignal<=  "01" when (StackSignal='1' and MEM_Read='1')
-          else "10" when (StackSignal='1' and MEM_Write='1')
+          else "10" when (StackSignal='1' and MEM_Write='1') 
           else "00" ;
 
 AdderIn<=SP_NEW;
 AdderComp : SP_adder port map(AdderIn,AdderSignal,Do32,AdderOut);
 SP : REG_M port map(AdderOut,StackSignal,clk,Reset,SP_NEW);
 
-Address <= SP_OLD when (StackSignal = '1' and MEM_Write='1')
+Address <= SP_OLD when (StackSignal = '1' and MEM_Write='1') 
       else AdderOut when (StackSignal = '1' and MEM_Read='1')
       else ALU_out when StackSignal = '0' ;
 
-Memory : MEM port map(MEM_Read,MEM_Write,Do32,clk,StackSignal,Address,DataIn1,DataIn2,DOut1,DOut2,EXP);
+Memory : MEM port map(MEM_Read,MEM_Write,Do32,clk,StackSignal,Address,DataIn1,DataIn2,DOut1,DOut2,EXCP); 
 DO1<=DOUT1;
 DO2<=DOUT2;
-ExceptionFlag <= EXP;
+ExceptionFlag <= EXCP;
 process(CLK)
 begin
 if(falling_edge(CLK)) then
