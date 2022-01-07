@@ -9,9 +9,12 @@ RISC Piplined Processor
 3-10  Ret/RTI \
 4-11  call/jmp
 # control unit should send selector of 1 bit as follows : 
-``` done , named pc_mux1_selector ```
+``` for pc selector mux 2 :```
 
-1-0     by defoult \
-2-1     if Reset or Exp1 or  Exp2 or Interupt happen
+1-00  Reset \
+2-01  Exception1\
+3-10  Exception2\
+4-11  Interrupt
+
 
 
