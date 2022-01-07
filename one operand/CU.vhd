@@ -32,7 +32,8 @@ entity control_unit is
   
   regFileWrite_en  : out std_logic;                      -- register file write enable --
   imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
-  PC_selector      : out std_logic_vector (2 downto 0);  -- selector of the mux that determine the value of PC ---
+  PC_mux1_selector : out std_logic;                      -- selector of the first mux that determine if 0 or 1 (reset , exception , interrupt) ---
+  PC_mux2_selector : out std_logic_vector (1 downto 0);  -- selector of the second mux that determine if reset , exception1 , exception2 , interrupt --
   stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
   alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
@@ -47,7 +48,6 @@ architecture contolUnit of control_unit is
 
     signal operation   : integer range 0 to 24;
     signal temp_counter: std_logic := '0';
-
     -- one operand operations --
     constant NOP     : integer := 0;
     constant HLT     : integer := 1;
@@ -88,7 +88,7 @@ begin
             end if;
         end if;
     end process;
-    
+
     operation <= to_integer(unsigned(opcode));
     reset_out <= '1' when (reset_in = '1') else '0';
 
@@ -102,12 +102,11 @@ begin
 
     imm_value   <= immediate_value ;
 
-    PC_selector <= "001" when reset_in ='1' and temp_counter = '0' else
-        "010" when (exception_flag ="01" or exception_flag = "10") else
-        "011" when (operation = RET or operation = RTI) else    -- get pc from the stack --
-        "100" when (operation = CALL or operation = JMP) else   -- get pc from decode --
-        "101" when (temp_counter = '1') else   -- get pc from decode --
-        "000";
+    PC_mux1_selector <= '1' when (operation = INT or operation = CALL or operation = JMP or exception_flag = "01" or exception_flag = "10" ) else '0';
+    PC_mux2_selector <= "00" when reset_in ='1' else
+        "01"  when  exception_flag ="01"  else
+        "10"  when  exception_flag ="10" else    -
+        "11"  when  operation = INT ;
 
     -- if 1 stack operation , if 0 memory operation --
     stack_memory   <= '0' when (operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH) else 
