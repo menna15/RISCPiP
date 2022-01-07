@@ -37,7 +37,9 @@ entity control_unit is
   
   regFileWrite_en  : out std_logic;                      -- register file write enable --
   imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
-  PC_selector      : out std_logic_vector (2 downto 0);  -- selector of the mux that determine the value of PC ---
+  PC_mux1          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (from stack , from ALU , memory out , default) ---
+  PC_mux2          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (M(0) "reset" , M(2) exp1 , M(4) exp2 , index+6 interrupt )---
+                                                         -- third mux selector will be the signal do_32_fetch --
   stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
   alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
@@ -51,7 +53,9 @@ end control_unit;
 architecture contolUnit of control_unit is
 
     signal operation   : integer range 0 to 24;
-    signal temp_counter: std_logic := '0';
+    signal temp_R,temp_I,temp_E    : std_logic := '0';       -- temp counter for reset  , interrupt , exception that count 2 cycles --
+    signal temp_RET, temp_RI       : integer range 0 to 3;   -- temp counter for return , return interrupt that count 4 cycles --
+    signal temp_J,temp_C           : integer range 0 to 2;   -- temp counter for JMP    , CALL  that count 3 cycles --
 
     -- one operand operations --
     constant NOP     : integer := 0;
@@ -84,17 +88,57 @@ architecture contolUnit of control_unit is
     constant RTI   : integer := 24;
     
 begin
+    operation <= to_integer(unsigned(opcode));
     process(clk)
     begin
         if rising_edge(clk) then
-            if reset_in = '1' then
-                 temp_counter <= '1';
-            else temp_counter <= '0';
+            ---- reset ---------
+            if reset_in = '1' and temp_R ='0' then
+                 temp_R <= '1';
+            else temp_R <= '0';
+            end if;
+            ---- Interrupt -----
+            if operation = INT and temp_I ='0' then
+                temp_I <= '1';
+           else temp_I <= '0';
+           end if;
+            --- Exception ------
+            if exception_flag /= "00" and temp_E ='0' then
+                temp_E <= '1';
+           else temp_E <= '0';
+           end if;
+            ---- Return --------
+            if operation = RET and temp_RET = 0  then
+                temp_RET <= 1;
+            elsif temp_RET /= 4 then
+                temp_RET <= temp_RET + 1;
+            else temp_RET <= 0;
+            end if;
+            ---- Return Interrupt --------
+            if operation = RTI and temp_RI = 0  then
+                temp_RI <= 1;
+            elsif temp_RI /= 4 then
+                temp_RI <= temp_RI + 1;
+            else temp_RI <= 0;
+            end if;
+            ----- JMP ---------------
+            if operation = JMP and temp_J = 0  then
+                temp_J <= 1;
+            elsif temp_J /= 3 then
+                temp_J <= temp_J + 1;
+            else temp_J <= 0;
+            end if;
+            ----- CALL ---------------
+            if operation = CALL and temp_C = 0  then
+                temp_C <= 1;
+            elsif temp_C /= 3 then
+                temp_C <= temp_C + 1;
+            else temp_C <= 0;
             end if;
         end if;
     end process;
     
-    operation <= to_integer(unsigned(opcode));
+
     reset_out <= '1' when (reset_in = '1') else '0';
 
     memRead  <= '1' when (operation = LDD or operation = POP ) else '0' ;
@@ -102,17 +146,22 @@ begin
     inPort   <= '1' when (operation = IN_OP)  else '0';
     outPort  <= '1' when (operation = OUT_OP) else '0';
 
-    regFileWrite <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
+    regFileWrite_en <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
      or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) else '0';
 
     imm_value   <= immediate_value ;
 
-    PC_selector <= "001" when reset_in ='1' and temp_counter = '0' else
-        "010" when (exception_flag ="01" or exception_flag = "10") else
-        "011" when (operation = RET or operation = RTI) else    -- get pc from the stack --
-        "100" when (operation = CALL or operation = JMP) else   -- get pc from decode --
-        "101" when (temp_counter = '1') else   -- get pc from decode --
-        "000";
+    PC_mux1     <= "01"  when (temp_R = '1' or temp_E = '1' or temp_I = '1') else
+        "10"  when (temp_RET = 3 or temp_RI = 3)  else
+        "11"  when (temp_J = 2   or temp_C = 2 )  else
+        "00";
+
+    PC_mux2     <= "00"  when (reset_in = '1') else
+        "01"  when (exception_flag = "01")  else
+        "10"  when (exception_flag = "10")  else
+        "11";  -- when interrupt happens and 11 is the default also because this mux won't be activated unless do 32 = 1--              
+                
+                    
 
     -- if 1 stack operation , if 0 memory operation --
     stack_memory   <= '0' when (operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH) else 
@@ -125,7 +174,7 @@ begin
         "0010" when (operation = INC)    else
         "0011" when (operation = ADD)    else
         "0100" when (operation = LDD or operation = STD) else
-        "0101" when (operation = SUB) else
+        "0101" when (operation = SUB)    else
         "0110" when (operation = AND_OP) else
         "0111" when (operation = IADD)   else
         "1000" when (operation = IN_OP)  else
@@ -140,7 +189,6 @@ begin
         
         imm_value    <= immediate_value ;
 
-        -- comment dol ya nada l7d ma t7otii el port map
         pc_freeze    <= '1' when (load_use = '1' or operation = HLT) else '0';
         stall        <= '1' when (load_use = '1') else '0';
         registers_en <= '0' when (load_use = '1') else '1';
@@ -148,7 +196,8 @@ begin
         load_flag    <= '1' when (operation = LDD or operation = LDM) else '0';
         do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
         do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
-        fetch_flush  <= '1' when (reset_in = '1' or temp_counter = '1'or operation = HLT) else '0';
+        fetch_flush  <= '1' when (reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
+                         temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or  operation = HLT) else '0';
         decode_flush <= '1' when (reset_in = '1') else '0';
         memory_flush <= '1' when (reset_in = '1') else '0';
         WB_flush     <= '1' when (reset_in = '1') else '0';

@@ -32,8 +32,7 @@ entity control_unit is
   
   regFileWrite_en  : out std_logic;                      -- register file write enable --
   imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
-  PC_mux1_selector : out std_logic;                      -- selector of the first mux that determine if 0 or 1 (reset , exception , interrupt) ---
-  PC_mux2_selector : out std_logic_vector (1 downto 0);  -- selector of the second mux that determine if reset , exception1 , exception2 , interrupt --
+  PC_selector      : out std_logic_vector (2 downto 0);  -- selector of the mux that determine the value of PC ---
   stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
   alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
@@ -97,16 +96,17 @@ begin
     inPort   <= '1' when (operation = IN_OP)  else '0';
     outPort  <= '1' when (operation = OUT_OP) else '0';
 
-    regFileWrite <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
+    regFileWrite_en <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
      or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) else '0';
 
     imm_value   <= immediate_value ;
 
-    PC_mux1_selector <= '1' when (operation = INT or operation = CALL or operation = JMP or exception_flag = "01" or exception_flag = "10" ) else '0';
-    PC_mux2_selector <= "00" when reset_in ='1' else
-        "01"  when  exception_flag ="01"  else
-        "10"  when  exception_flag ="10" else    -
-        "11"  when  operation = INT ;
+    PC_selector <= "001" when reset_in ='1' and temp_counter = '0' else
+        "010" when (exception_flag ="01" or exception_flag = "10") else
+        "011" when (operation = RET or operation = RTI) else    -- get pc from the stack --
+        "100" when (operation = CALL or operation = JMP) else   -- get pc from decode --
+        "101" when (temp_counter = '1') else   -- get pc from decode --
+        "000";
 
     -- if 1 stack operation , if 0 memory operation --
     stack_memory   <= '0' when (operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH) else 
@@ -134,11 +134,7 @@ begin
         
         imm_value    <= immediate_value ;
 
-        -- comment dol ya nada l7d ma t7otii el port map
-        -- pc_freeze    <= '1' when (load_use = '1' or operation = HLT) else '0';
-
-
-        load_flag    <= '1' when (operation = LDD or operation = LDM) else '0';
+        
         do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
         do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
         fetch_flush  <= '1' when (reset_in = '1' or temp_counter = '1'or operation = HLT) else '0';
