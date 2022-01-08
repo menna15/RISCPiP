@@ -147,7 +147,7 @@ begin
 
     reset_out <= '1' when (reset_in = '1') else '0';
 
-    memRead  <= '1' when (operation = LDD or operation = POP or operation = RET or operation = RTI ) else '0' ;
+    memRead  <= '1' when (operation = LDD or operation = LDM or operation = POP or operation = RET or operation = RTI ) else '0' ;
     memWrite <= '1' when (operation = PUSH or operation = STD or operation = CALL or operation = INT) else '0' ;
     inPort   <= '1' when (operation = IN_OP)  else '0';
     outPort  <= '1' when (operation = OUT_OP) else '0';

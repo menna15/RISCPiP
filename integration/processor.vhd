@@ -65,6 +65,7 @@ ARCHITECTURE processor_a OF processor IS
         --- Hazard Unit component ---
         COMPONENT HazardUnit IS
         port (
+                clk           : in std_logic;
                 Instruction   : in std_logic_vector (15 downto 0);-- instruction from fetch not (fetch / decode buffer) --
                 load_flag     : in std_logic;                     -- load flag from control unit to decide if the previous instruction (which is in decode now ) was load operation or not --
                 Rdest_address : in std_logic_vector(2 downto 0);  -- Rdest address from Decode/Execute buffer --
@@ -298,7 +299,7 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
-        hazard : HazardUnit PORT MAP( instruction , load_use_out , R_dest_address , load_use_flag);
+        hazard : HazardUnit PORT MAP( clk, instruction , load_use_out , R_dest_address , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
                 reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out, instruction,
