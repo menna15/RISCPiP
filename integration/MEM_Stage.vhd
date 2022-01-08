@@ -48,6 +48,7 @@ end COMPONENT ;
 SIGNAL DOut1,DOut2,DataIn1,DataIn2 : std_logic_vector(15 downto 0);
 SIGNAL SP_OLD,SP_NEW,Address,AdderIn,AdderOut : std_logic_vector(31 downto 0);
 SIGNAL AdderSignal,EXCP : std_logic_vector(1 downto 0);
+SIGNAL EPC : std_logic_vector(31 downto 0);
 --------------------------------------------------
 begin
 
@@ -71,6 +72,8 @@ Memory : MEM port map(MEM_Read,MEM_Write,Do32,clk,StackSignal,Address,DataIn1,Da
 DO1<=DOUT1;
 DO2<=DOUT2;
 ExceptionFlag <= EXCP;
+EPC <= (std_logic_vector(unsigned(PC_flags_in)-1)) when (EXCP = "10" or EXCP = "10")
+      else (others => 'Z');
 process(CLK)
 begin
 if(falling_edge(CLK)) then
