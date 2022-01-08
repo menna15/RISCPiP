@@ -147,7 +147,7 @@ begin
 
     reset_out <= '1' when (reset_in = '1') else '0';
 
-    memRead  <= '1' when (operation = LDD or operation = LDM or operation = POP or operation = RET or operation = RTI ) else '0' ;
+    memRead  <= '1' when (operation = LDD or operation = POP or operation = RET or operation = RTI ) else '0' ;
     memWrite <= '1' when (operation = PUSH or operation = STD or operation = CALL or operation = INT) else '0' ;
     inPort   <= '1' when (operation = IN_OP)  else '0';
     outPort  <= '1' when (operation = OUT_OP) else '0';
@@ -199,7 +199,7 @@ begin
         -- registers_en <= '0' when (load_use = '1' and temp_load_use /= '1') else '1';
         registers_en <= '1';
         --
-        load_flag    <= '1' when (operation = LDD or operation = LDM) else '0';
+        load_flag    <= '1' when (operation = POP ) else '0';
         do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
         do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
         fetch_flush  <= '1' when (reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
