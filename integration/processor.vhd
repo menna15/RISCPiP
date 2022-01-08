@@ -166,7 +166,7 @@ ARCHITECTURE processor_a OF processor IS
         COMPONENT FU IS
         PORT (
             R_src1_addr,R_scr2_addr : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            Imm_Signal: IN STD_LOGIC;
+            clk, Imm_Signal: IN STD_LOGIC;
             WR_Mem_WB, WR_Ex_Mem: IN STD_LOGIC;
             R_dest_Mem_WB,R_dest_Ex_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
             Sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0));
@@ -314,9 +314,9 @@ BEGIN
         
         Memory_stage  : MEMStage  PORT MAP(M_OUT(1),M_OUT(0),reset_out_signal,M_OUT(2),clk,M_OUT(3),ALU_OUT_memory,R_src1_OUT_memory,PC_flags_OUT ,exception_flag,DO1,DO2);
         WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
-        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, immediate , write_back_signal_out, WB_OUT, reg_dst_address_out, R_dest_address_OUT_memory , FU_select);
+        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select);
    
 
 
-        outPort <= R_src1 when outPort_signal = '1' else (OTHERS =>'Z');
+        outPort <= ALU_out when outPort_signal = '1' else (OTHERS =>'Z');
         END ARCHITECTURE;

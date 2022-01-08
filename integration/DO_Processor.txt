@@ -1,0 +1,9 @@
+vsim -gui work.processor
+mem load -i {D:/CMP/fifth term/Computer Architecture/test_project/OneOperand.mem} -format binary -startaddress 0 -endaddress 1999 /processor/Fetch/memory/ram
+add wave -position insertpoint sim:/processor/*
+add wave -position insertpoint sim:/processor/Forwarding_Unit/*
+add wave -position insertpoint sim:/processor/ALU/*
+force -freeze sim:/processor/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/processor/reset 1 0
+run
+force -freeze sim:/processor/reset 0 0

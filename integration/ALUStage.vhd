@@ -128,14 +128,14 @@ BEGIN
         WR_wire, M_wire, R_src1_address_wire, R_src2_address_wire, R_dest_address_wire, EX_wire, IN_port_wire, R_src1_wire, R_src2_wire, PC_wire);
 
     --set ret_signal and inport depend on the EX code
-    inport_signal <= '0' WHEN EX = "1000" ELSE
+    inport_signal <= '0' WHEN EX_wire = "1000" ELSE
         '1';
-    ret_signal <= '0' WHEN EX = "1100" ELSE
+    ret_signal <= '0' WHEN EX_wire = "1100" ELSE
         '1';
-    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port_wire, R_src1_wire, inport_signal, MUX_2_out_wire);
+    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, R_src1_wire, inport_signal, MUX_2_out_wire);
     Mux2_flags : mux2 GENERIC MAP(size => 3) PORT MAP(C_Z_N_flags_from_stack, C_Z_N_flags_IN_wire, ret_signal, C_Z_N_flags_OUT_wire);
-    Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU_wire, ALU_TO_ALU_wire, MUX_2_out_wire, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_1_OP_wire);
-    Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU_wire, ALU_TO_ALU_wire, IMM_value, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_2_OP_wire);
+    Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU, ALU_TO_ALU, MUX_2_out_wire, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_1_OP_wire);
+    Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, IMM_value, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_2_OP_wire);
 
     ALU : ALUProject PORT MAP(ALU_1_OP_wire, ALU_2_OP_wire, EX_wire, ALU_out, C_Z_N_flags_IN_wire, flags_reg_enable_wire);
 
@@ -145,7 +145,7 @@ BEGIN
     negative_reg : reg_fall_edge PORT MAP(C_Z_N_flags_OUT_wire(2), clk, reset, flags_reg_enable_wire(2), OUT_from_flags_reg_wire(2));
 
     --handle branching
-    branch_signal <= '1' WHEN (EX = "1001" AND OUT_from_flags_reg_wire(0) = '1') OR (EX = "1010" AND OUT_from_flags_reg_wire(1) = '1') OR (EX = "1011" AND OUT_from_flags_reg_wire(2) = '1') ELSE
+    branch_signal <= '1' WHEN (EX_wire = "1001" AND OUT_from_flags_reg_wire(0) = '1') OR (EX_wire = "1010" AND OUT_from_flags_reg_wire(1) = '1') OR (EX_wire = "1011" AND OUT_from_flags_reg_wire(2) = '1') ELSE
         '0';
 
     --concatenate PC with Flages for the next stage
