@@ -188,7 +188,6 @@ begin
         "1010" when (operation = JZ)     else
         "1011" when (operation = JN)     else
         "1100" when (operation = RET or operation = RTI) else
-        "1111" when (operation = OUT_OP ) else
         "1101";
 
         exception_selector <= '0' when (exception_flag = "01") else
