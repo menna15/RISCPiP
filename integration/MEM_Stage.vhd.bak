@@ -46,7 +46,7 @@ end COMPONENT ;
 
 ---------------------Signals----------------------
 SIGNAL DOut1,DOut2,DataIn1,DataIn2 : std_logic_vector(15 downto 0);
-SIGNAL SP_NEW,Address,AdderIn,AdderOut : std_logic_vector(31 downto 0);
+SIGNAL SP_OLD,SP_NEW,Address,AdderIn,AdderOut : std_logic_vector(31 downto 0);
 SIGNAL AdderSignal,EXCP : std_logic_vector(1 downto 0);
 SIGNAL EPC : std_logic_vector(31 downto 0);
 --------------------------------------------------
@@ -64,7 +64,7 @@ AdderIn<=SP_NEW;
 AdderComp : SP_adder port map(AdderIn,AdderSignal,Do32,AdderOut);
 SP : REG_M port map(AdderOut,StackSignal,clk,Reset,SP_NEW);
 
-Address <= SP_NEW when (StackSignal = '1' and MEM_Write='1') 
+Address <= SP_OLD when (StackSignal = '1' and MEM_Write='1') 
       else AdderOut when (StackSignal = '1' and MEM_Read='1')
       else ALU_out when StackSignal = '0' ;
 
@@ -74,4 +74,10 @@ DO2<=DOUT2;
 ExceptionFlag <= EXCP;
 EPC <= (std_logic_vector(unsigned(PC_flags_in)-1)) when (EXCP = "10" or EXCP = "10")
       else (others => 'Z');
+process(CLK)
+begin
+if(falling_edge(CLK)) then
+  SP_OLD<=SP_NEW;
+  end if;
+end process;
 end MEMStageArc ;

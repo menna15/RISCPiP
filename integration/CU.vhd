@@ -57,7 +57,7 @@ architecture contolUnit of control_unit is
     signal temp_R,temp_I,temp_E    : std_logic := '0';       -- temp counter for reset  , interrupt , exception that count 2 cycles --
     signal temp_RET, temp_RI       : integer range 0 to 4 := 0;   -- temp counter for return , return interrupt that count 4 cycles --
     signal temp_J,temp_C           : integer range 0 to 3 := 0;   -- temp counter for JMP    , CALL  that count 3 cycles --
-
+    signal temp_load_use           : std_logic := '0';       -- temp counter , to count one cycle for stalling only , then stall will return to 0 --
     -- one operand operations --
     constant NOP     : integer := 0;
     constant HLT     : integer := 1;
@@ -136,6 +136,11 @@ begin
                 temp_C <= temp_C + 1;
             else temp_C <= 0;
             end if;
+            --- load use case ----
+            if load_use = '1' and temp_load_use = '0' then
+                 temp_load_use <= '1';
+            else temp_load_use <= '0';
+            end if;
         end if;
     end process;
     
@@ -189,9 +194,10 @@ begin
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --
         
 
-        pc_freeze    <= '1' when (load_use = '1' or operation = HLT) else '0';
-        stall        <= '1' when (load_use = '1') else '0';
-        registers_en <= '0' when (load_use = '1') else '1';
+        pc_freeze    <= '1' when ((load_use = '1' and temp_load_use /= '1') or operation = HLT) else '0';
+        stall        <= '1' when (load_use = '1' and temp_load_use /= '1') else '0';
+        -- registers_en <= '0' when (load_use = '1' and temp_load_use /= '1') else '1';
+        registers_en <= '1';
         --
         load_flag    <= '1' when (operation = LDD or operation = LDM) else '0';
         do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
@@ -199,8 +205,8 @@ begin
         fetch_flush  <= '1' when (reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
                          temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or  operation = HLT or branch_signal='1') else '0';
         decode_flush <= '1' when (reset_in = '1' or  branch_signal='1' or immediate_value = '1') else '0';
-        memory_flush <= '1' when (reset_in = '1') else '0';
-        WB_flush     <= '1' when (reset_in = '1') else '0';
+        memory_flush <= '1' when (reset_in = '1')  else '0';
+        WB_flush     <= '1' when (reset_in = '1')  else '0';
         interrupt    <= '1' when (operation = INT) else '0';
             
 end architecture;
