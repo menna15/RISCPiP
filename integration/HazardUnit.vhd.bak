@@ -15,9 +15,7 @@ entity HazardUnit is
     end HazardUnit; 
     -- Op code From  0  to  4 , Rsrc1 address  From  5  to  7 , Rsrc2 address From  8  to  10 --
 architecture Hazard_architecture of HazardUnit is
-begin
-    process(clk)
-     begin
+ begin
         if falling_edge(clk) then
             if((load_flag = '1') and ((Rdest_address = Instruction(7 downto 5)) or (Rdest_address = Instruction(10 DOWNTO 8)))) then
                 load_use <= '1'; else 

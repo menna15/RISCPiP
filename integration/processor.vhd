@@ -97,6 +97,7 @@ ARCHITECTURE processor_a OF processor IS
                         reset, clk, flush_signal, stall_signal, immediate_signal, write_signal : IN STD_LOGIC;
                         inst : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
                         write_back_data : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+			write_back_selector:IN STD_LOGIC_VECTOR(2 DOWNTO 0);
                         output_src_1, output_src_2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         opcode : OUT STD_LOGIC_VECTOR(4 DOWNTO 0); --opcode to controle unit
                         reg_src_1_address, reg_src_2_address, reg_dst_address : OUT STD_LOGIC_VECTOR(2 DOWNTO 0); --registers address
@@ -302,8 +303,8 @@ BEGIN
         hazard : HazardUnit PORT MAP( clk, instruction , load_use_out , R_dest_address , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
-                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out, instruction,
-                write_back_data_out, R_src1, R_src2, opcode, R_src1_address, R_src2_address,
+                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
+                 write_back_data_out, reg_dst_address_out,R_src1, R_src2, opcode, R_src1_address, R_src2_address,
                 R_dest_address, int_index, IMM_value, immediate);
 
         ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
