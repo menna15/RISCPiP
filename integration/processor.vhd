@@ -65,10 +65,10 @@ ARCHITECTURE processor_a OF processor IS
         --- Hazard Unit component ---
         COMPONENT HazardUnit IS
         port (
-                Instruction   : in std_logic_vector (15 downto 0);-- instruction from fetch not (fetch / decode buffer) --
-                load_flag     : in std_logic;                     -- load flag from control unit to decide if the previous instruction (which is in decode now ) was load operation or not --
-                Rdest_address : in std_logic_vector(2 downto 0);  -- Rdest address from Decode/Execute buffer --
-                load_use      : out std_logic                     -- if 1 load use case detected else 0 --
+        Rsrc1,Rsrc2   : in std_logic_vector (2 downto 0);   -- Rsrc1,Rsrc2 from decode/ex buffer --
+        memory_signals: in std_logic_vector(3 downto 0);    --  from decode/ex buffer was pop operation or not --
+        Rdest_address : in std_logic_vector(2 downto 0);    -- Rdest address from Execute/Mmemory  buffer --
+        load_use      : out std_logic                       -- if 1 load use case detected else 0 --
         
             );
         END COMPONENT;
@@ -96,6 +96,7 @@ ARCHITECTURE processor_a OF processor IS
                         reset, clk, flush_signal, stall_signal, immediate_signal, write_signal : IN STD_LOGIC;
                         inst : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
                         write_back_data : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+			write_back_selector:IN STD_LOGIC_VECTOR(2 DOWNTO 0);
                         output_src_1, output_src_2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         opcode : OUT STD_LOGIC_VECTOR(4 DOWNTO 0); --opcode to controle unit
                         reg_src_1_address, reg_src_2_address, reg_dst_address : OUT STD_LOGIC_VECTOR(2 DOWNTO 0); --registers address
@@ -299,11 +300,11 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
-        hazard : HazardUnit PORT MAP( instruction , load_use_out , R_dest_address , load_use_flag);
+        hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,memory_signals, R_dest_address_OUT_memory , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
-                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out, instruction,
-                write_back_data_out, R_src1, R_src2, opcode, R_src1_address, R_src2_address,
+                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
+                 write_back_data_out, reg_dst_address_out,R_src1, R_src2, opcode, R_src1_address, R_src2_address,
                 R_dest_address, int_index, IMM_value, immediate);
 
         ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
