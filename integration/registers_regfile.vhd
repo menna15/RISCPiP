@@ -19,7 +19,6 @@ BEGIN
 
 	PROCESS (Clk)
 	BEGIN
-
 		IF reset = '1' THEN
 			data <= (OTHERS => '0');
 		ELSIF (falling_edge (Clk) AND en = '1') THEN

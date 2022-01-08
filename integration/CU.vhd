@@ -170,6 +170,7 @@ begin
                     
 
     -- if 1 stack operation , if 0 memory operation --
+
     stack_memory   <= '1' when ((operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH)and immediate_value='0') else 
     '0'  when ((operation = LDD or operation = LDM or operation = STD)and immediate_value='0');
 

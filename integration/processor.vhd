@@ -96,6 +96,7 @@ ARCHITECTURE processor_a OF processor IS
                         reset, clk, flush_signal, stall_signal, immediate_signal, write_signal : IN STD_LOGIC;
                         inst : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
                         write_back_data : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+			write_back_selector:IN STD_LOGIC_VECTOR(2 DOWNTO 0);
                         output_src_1, output_src_2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         opcode : OUT STD_LOGIC_VECTOR(4 DOWNTO 0); --opcode to controle unit
                         reg_src_1_address, reg_src_2_address, reg_dst_address : OUT STD_LOGIC_VECTOR(2 DOWNTO 0); --registers address
@@ -142,7 +143,8 @@ ARCHITECTURE processor_a OF processor IS
                         R_dest_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
                         ALU_out, R_src1_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         PC_flages : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-                        branch_signal : OUT STD_LOGIC);
+                        branch_signal : OUT STD_LOGIC;
+                        Out_port: OUT STD_LOGIC_VECTOR(15 DOWNTO 0));
         END COMPONENT;
         -------------------------
         -- Memory buffer --------
@@ -301,12 +303,12 @@ BEGIN
         hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,memory_signals, R_dest_address_OUT_memory , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
-                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out, instruction,
-                write_back_data_out, R_src1, R_src2, opcode, R_src1_address, R_src2_address,
+                reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
+                 write_back_data_out, reg_dst_address_out,R_src1, R_src2, opcode, R_src1_address, R_src2_address,
                 R_dest_address, int_index, IMM_value, immediate);
 
         ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
-        R_src1_address,R_src2_address,R_dest_address,FU_select,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal);
+        R_src1_address,R_src2_address,R_dest_address,FU_select,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
         
         Memory_buffer : alu_memory_buffer PORT MAP (clk,'0',memory_flush_signal,Mout,WR_out(0),R_dest_address_out ,ALU_out, R_src1_out, 
         PC_flages, branch_signal,M_OUT,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
@@ -315,7 +317,4 @@ BEGIN
         WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
         Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select);
    
-
-
-        outPort <= ALU_out when outPort_signal = '1' else (OTHERS =>'Z');
         END ARCHITECTURE;

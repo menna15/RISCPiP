@@ -15,7 +15,6 @@ entity HazardUnit is
     -- Op code From  0  to  4 , Rsrc1 address  From  5  to  7 , Rsrc2 address From  8  to  10 --
 architecture Hazard_architecture of HazardUnit is
 begin
-
     load_use <= '1' when (memory_signals(1) = '1' and memory_signals(3) = '1' and ((Rdest_address = Rsrc1) or (Rdest_address = Rsrc2))) else
         '0';
 
