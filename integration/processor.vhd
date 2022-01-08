@@ -20,49 +20,59 @@ ARCHITECTURE processor_a OF processor IS
         COMPONENT control_unit IS
                 PORT (
                         ----- inputs ---------
-  clk             : in std_logic;
-  opcode          : in std_logic_vector(4 downto 0); 
-  immediate_value : in std_logic ;                    -- 1 bit signal comes from fetch stage --
-  exception_flag  : in std_logic_vector(1 downto 0) ; -- input from memory to seclect if exception 1 or exception 2 or no exception happened --
-  load_use        : in std_logic ;                    -- 1 bit signal comes from hazard detection unit to decide if stalling would happen or not --
-  branch_signal : in std_logic;
-  -- reset --
-  reset_in     : in std_logic;                        -- from Processor --
-  ---- outputs ---------
-  reset_out     : out std_logic;                       -- to the buffers in all stages --
-  
-  load_flag     : out std_logic;                       -- load flag is input to hazard unit to know if its load operation or not -- 
-  registers_en  : out std_logic;                       -- registers enable will be 0 incase of load use (stall = 1 ) else 1.
-  stall         : out std_logic;                       -- if load_use = 1 , stall signal will send to fetch/decode buffer to stall the instruction 
-  pc_freeze     : out std_logic;                       -- freeze Pc incase of load use case.
-  
-  memRead       : out std_logic;
-  memWrite      : out std_logic;
-  inPort        : out std_logic;
-  outPort       : out std_logic;
-  interrupt     : out std_logic;                           -- interrupt signal to the mux in the fetch stage --
- ---- read 32 or 16 signals----
-  do_32_memory  : out std_logic;                           -- signal to the memory to decide if it will read 32 bits or 16 bits --
-  do_32_fetch   : out std_logic;                           -- signal to the fetch to decide if it will read 32 bits or 16 bits --
-  -- flushing signals ----------
-  fetch_flush   : out std_logic;                           -- flush signal to fetch/decode buffer incase of reset = 1 and the following cycle also because 
-                                                           --  if reset = 1 reading the new value of the PC will be done in 2 cycles --
-  decode_flush  : out std_logic;                           -- flush signal to decode/exec buffer incase of reset = 1 --
-  memory_flush  : out std_logic;                           -- flush signal to exec/memory buffer incase of reset = 1 --
-  WB_flush      : out std_logic;                           -- flush signal to memory/WB buffer incase of reset = 1 --
-  
-  regFileWrite_en  : out std_logic;                      -- register file write enable --
-  imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
-  PC_mux1          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (from stack , from ALU , memory out , default) ---
-  PC_mux2          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (M(0) "reset" , M(2) exp1 , M(4) exp2 , index+6 interrupt )---
-                                                         -- third mux selector will be the signal do_32_fetch --
-  stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
-  alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
+                clk             : in std_logic;
+                opcode          : in std_logic_vector(4 downto 0); 
+                immediate_value : in std_logic ;                    -- 1 bit signal comes from fetch stage --
+                exception_flag  : in std_logic_vector(1 downto 0) ; -- input from memory to seclect if exception 1 or exception 2 or no exception happened --
+                load_use        : in std_logic ;                    -- 1 bit signal comes from hazard detection unit to decide if stalling would happen or not --
+                branch_signal : in std_logic;
+                -- reset --
+                reset_in     : in std_logic;                        -- from Processor --
+                ---- outputs ---------
+                reset_out     : out std_logic;                       -- to the buffers in all stages --
+                
+                load_flag     : out std_logic;                       -- load flag is input to hazard unit to know if its load operation or not -- 
+                registers_en  : out std_logic;                       -- registers enable will be 0 incase of load use (stall = 1 ) else 1.
+                stall         : out std_logic;                       -- if load_use = 1 , stall signal will send to fetch/decode buffer to stall the instruction 
+                pc_freeze     : out std_logic;                       -- freeze Pc incase of load use case.
+                
+                memRead       : out std_logic;
+                memWrite      : out std_logic;
+                inPort        : out std_logic;
+                outPort       : out std_logic;
+                interrupt     : out std_logic;                           -- interrupt signal to the mux in the fetch stage --
+                ---- read 32 or 16 signals----
+                do_32_memory  : out std_logic;                           -- signal to the memory to decide if it will read 32 bits or 16 bits --
+                do_32_fetch   : out std_logic;                           -- signal to the fetch to decide if it will read 32 bits or 16 bits --
+                -- flushing signals ----------
+                fetch_flush   : out std_logic;                           -- flush signal to fetch/decode buffer incase of reset = 1 and the following cycle also because 
+                                                                        --  if reset = 1 reading the new value of the PC will be done in 2 cycles --
+                decode_flush  : out std_logic;                           -- flush signal to decode/exec buffer incase of reset = 1 --
+                memory_flush  : out std_logic;                           -- flush signal to exec/memory buffer incase of reset = 1 --
+                WB_flush      : out std_logic;                           -- flush signal to memory/WB buffer incase of reset = 1 --
+                
+                regFileWrite_en  : out std_logic;                      -- register file write enable --
+                imm_value        : out std_logic;                      -- 1 bit signals outs to fetch buffer --
+                PC_mux1          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (from stack , from ALU , memory out , default) ---
+                PC_mux2          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (M(0) "reset" , M(2) exp1 , M(4) exp2 , index+6 interrupt )---
+                                                                        -- third mux selector will be the signal do_32_fetch --
+                stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
+                alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
-  exception_selector : out std_logic  );                    -- for the selector of the mux of the exception depend on exception number from exception flag input --
+                exception_selector : out std_logic  );                    -- for the selector of the mux of the exception depend on exception number from exception flag input --
 
         END COMPONENT;
-        ----Fetch stage component
+        --- Hazard Unit component ---
+        COMPONENT HazardUnit IS
+        port (
+                Instruction   : in std_logic_vector (15 downto 0);-- instruction from fetch not (fetch / decode buffer) --
+                load_flag     : in std_logic;                     -- load flag from control unit to decide if the previous instruction (which is in decode now ) was load operation or not --
+                Rdest_address : in std_logic_vector(2 downto 0);  -- Rdest address from Decode/Execute buffer --
+                load_use      : out std_logic                     -- if 1 load use case detected else 0 --
+        
+            );
+        END COMPONENT;
+        ----Fetch stage component ---
         COMPONENT FetchStage IS
                 PORT (
                -------------INPUTS--------------
@@ -209,7 +219,8 @@ ARCHITECTURE processor_a OF processor IS
         SIGNAL stack_memory_signal : STD_LOGIC; -- if 0 stack operations if 1 memory operations --
         SIGNAL alu_selector_signal : STD_LOGIC_VECTOR (3 DOWNTO 0); -- for selecting alu operation --
         SIGNAL exception_selector : STD_LOGIC;
-	SIGNAL load_use_out : STD_LOGIC;
+        SIGNAL load_use_flag : STD_LOGIC;
+	SIGNAL load_use_out  : STD_LOGIC;
 	SIGNAL regs_en : STD_LOGIC;
 	SIGNAL pc_freeze : STD_LOGIC;
 	SIGNAL stall :STD_LOGIC;
@@ -271,11 +282,12 @@ BEGIN
         pc_from_alu_extended <="0000000000000000"&R_src1_OUT_memory;
         pc_from_stack<= "000" & DO2(12 downto 0)& DO1;
         CU : control_unit PORT MAP(
-                clk, opcode, immediate, exception_flag,'0',branch_signal , reset, reset_out_signal,load_use_out,regs_en,stall,
+                clk, opcode, immediate, exception_flag,load_use_flag,branch_signal , reset, reset_out_signal,load_use_out,regs_en,stall,
 		pc_freeze, memRead_signal, memWrite_signal, inPort_signal,
                 outPort_signal, interrupt_signal, do_32_memory_signal, do_32_fetch_signal, fetch_flush_signal, decode_flush_signal,
                 memory_flush_signal, WB_flush_signal, regFileWrite_signal, imm_value_signal,pc_mux1,pc_mux2, stack_memory_signal,
                 alu_selector_signal, exception_selector);
+        
         
         regFileWrite_signal_alu(0) <= regFileWrite_signal;
         memory_signals <= do_32_memory_signal&memRead_signal&memWrite_signal;
@@ -286,6 +298,7 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
+        hazard : HazardUnit PORT MAP( instruction , load_use_out , R_dest_address , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
                 reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out, instruction,
