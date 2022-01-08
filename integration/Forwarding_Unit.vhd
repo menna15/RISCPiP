@@ -14,7 +14,7 @@ END ENTITY;
 ARCHITECTURE FU_Arc OF FU IS
 BEGIN
   Sel <= "11" when Imm_Signal='1' else
-      "01" when R_dest_Mem_WB=R_src1_addr or R_dest_Mem_WB=R_scr2_addr else
-      "10"   when R_dest_Ex_Mem=R_src1_addr or R_dest_Ex_Mem=R_scr2_addr else
+      "01" when (R_dest_Mem_WB=R_src1_addr or R_dest_Mem_WB=R_scr2_addr) and WR_Mem_WB= '1' else
+      "10"   when (R_dest_Ex_Mem=R_src1_addr or R_dest_Ex_Mem=R_scr2_addr) and WR_Ex_Mem='1' else
       "00" ;
 END ARCHITECTURE;
