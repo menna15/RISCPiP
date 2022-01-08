@@ -1,4 +1,4 @@
-file = "TwoOperand"
+file = "Branch"
 read_file = open(file + ".asm", "r")
 array = ["0000000000000000" for i in range(2000)]
 array_counter = 0 
@@ -11,8 +11,10 @@ for i in range(len(lines)):
                 next_line = lines[i + 1].split()
                 if len(next_line) == 1:
                     try:
-                        array[int(line[1])] = '{0:016b}'.format(int(next_line[0], 16))
-                        i = i + 1
+                        num = '{0:032b}'.format(int(next_line[0], 16))
+                        array[int(line[1]) + 1] = num[:len(num)//2] # most significant bit
+                        array[int(line[1])] = num[len(num)//2 if len(num)%2 == 0 else (((len(num)//2))+1):] # least significant bit
+                        i = i + 2
                     except:
                         array_counter = int(line[1], 16)
                 else:
@@ -490,9 +492,9 @@ for i in range(len(lines)):
                 array_counter += 2
             ################################ branch (JZ, JN, JC, JMP, CALL) same of (OUT) & (RET) same of (IN)
             if(lines[i].startswith("INT")):
-                array[array_counter] = "0000000000010111"
-                array[array_counter + 1] = '{0:016b}'.format(int(line[1], 16))
-                array_counter += 2
+                array[array_counter] = "10111"
+                array[array_counter] = '{0:011b}'.format(int(line[1], 16)) + array[array_counter]
+                array_counter += 1
             if(lines[i].startswith("RTI") | lines[i].startswith("RET")):
                 if(lines[i].startswith("RTI")):
                     array[array_counter] = "11000"
