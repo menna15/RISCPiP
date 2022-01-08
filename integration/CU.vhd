@@ -10,7 +10,7 @@ entity control_unit is
   immediate_value : in std_logic ;                    -- 1 bit signal comes from fetch stage --
   exception_flag  : in std_logic_vector(1 downto 0) ; -- input from memory to seclect if exception 1 or exception 2 or no exception happened --
   load_use        : in std_logic ;                    -- 1 bit signal comes from hazard detection unit to decide if stalling would happen or not --
-  branch_signal :in std_logic ; 
+  branch_signal   : in std_logic ; 
   -- reset --
   reset_in     : in std_logic;                        -- from Processor --
   ---- outputs ---------
@@ -150,7 +150,7 @@ begin
     regFileWrite_en <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
      or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) else '0';
 
-    imm_value   <= immediate_value ;
+    imm_value   <= '1' when (operation = LDD or operation = STD or operation = LDM or operation = IADD) else '0';
 
     PC_mux1     <= "01"  when (temp_R = '1' or temp_E = '1' or temp_I = '1') else
         "10"  when (temp_RET = 3 or temp_RI = 3)  else
@@ -188,7 +188,6 @@ begin
         exception_selector <= '0' when (exception_flag = "01") else
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --
         
-        imm_value    <= immediate_value ;
 
         pc_freeze    <= '1' when (load_use = '1' or operation = HLT) else '0';
         stall        <= '1' when (load_use = '1') else '0';
@@ -199,7 +198,7 @@ begin
         do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
         fetch_flush  <= '1' when (reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
                          temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or  operation = HLT or branch_signal='1') else '0';
-        decode_flush <= '1' when (reset_in = '1' or  branch_signal='1') else '0';
+        decode_flush <= '1' when (reset_in = '1' or  branch_signal='1' or immediate_value = '1') else '0';
         memory_flush <= '1' when (reset_in = '1') else '0';
         WB_flush     <= '1' when (reset_in = '1') else '0';
         interrupt    <= '1' when (operation = INT) else '0';
