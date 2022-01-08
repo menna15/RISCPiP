@@ -313,7 +313,7 @@ BEGIN
         
         Memory_stage  : MEMStage  PORT MAP(M_OUT(1),M_OUT(0),reset_out_signal,M_OUT(2),clk,stack_memory_signal,ALU_OUT_memory,R_src1_OUT_memory,PC_flags_OUT ,exception_flag,DO1,DO2);
         WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
-        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, imm_value_signal , write_back_signal_out, WB_OUT, reg_dst_address_out, R_dest_address_OUT_memory , FU_select);
+        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, immediate , write_back_signal_out, WB_OUT, reg_dst_address_out, R_dest_address_OUT_memory , FU_select);
    
 
 
