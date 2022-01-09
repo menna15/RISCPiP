@@ -300,7 +300,7 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
-        hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,memory_signals, R_dest_address_OUT_memory , load_use_flag);
+        hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,M_OUT, R_dest_address_OUT_memory , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
                 reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
@@ -314,7 +314,7 @@ BEGIN
         PC_flages, branch_signal,M_OUT,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
         
         Memory_stage  : MEMStage  PORT MAP(M_OUT(1),M_OUT(0),reset_out_signal,M_OUT(2),clk,M_OUT(3),ALU_OUT_memory,R_src1_OUT_memory,PC_flags_OUT ,exception_flag,DO1,DO2);
-        WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(1), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
+        WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
         Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select);
    
         END ARCHITECTURE;
