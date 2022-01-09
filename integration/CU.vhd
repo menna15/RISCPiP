@@ -195,7 +195,7 @@ begin
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --
         
 
-        pc_freeze    <= '1' when ((load_use = '1' and temp_load_use /= '1') or (operation = HLT and immediate_value='0')) else '0';
+        pc_freeze    <= '1' when ((load_use = '1' and temp_load_use /= '1') or (operation = HLT and immediate_value='0' and reset_in = '0')) else '0';
         stall        <= '1' when (load_use = '1' and temp_load_use /= '1') else '0';
         -- registers_en <= '0' when (load_use = '1' and temp_load_use /= '1') else '1';
         registers_en <= '1';
