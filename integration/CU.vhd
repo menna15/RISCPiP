@@ -53,7 +53,7 @@ end control_unit;
 
 architecture contolUnit of control_unit is
 
-    signal operation   : integer range 0 to 24;
+    signal operation   : integer range 0 to 25;
     signal temp_R,temp_I,temp_E    : std_logic := '0';       -- temp counter for reset  , interrupt , exception that count 2 cycles --
     signal temp_RET, temp_RI       : integer range 0 to 4 := 0;   -- temp counter for return , return interrupt that count 4 cycles --
     signal temp_J,temp_C           : integer range 0 to 3 := 0;   -- temp counter for JMP    , CALL  that count 3 cycles --
@@ -89,7 +89,7 @@ architecture contolUnit of control_unit is
     constant RTI   : integer := 24;
     
 begin
-    operation <= to_integer(unsigned(opcode));
+    operation <= to_integer(unsigned(opcode)) WHEN (immediate_value /='1') ELSE 25;
     process(clk)
     begin
         if falling_edge(clk) then
