@@ -93,7 +93,7 @@ BEGIN
     A_wire <= NOT a WHEN EX(3 DOWNTO 0) = "0001" ELSE
         a AND b WHEN EX(3 DOWNTO 0) = "0110" ELSE
         a;
-    B_wire <= x"0000" WHEN EX(3 DOWNTO 0) = "0001" OR EX(3 DOWNTO 0) = "0110" OR EX(3 DOWNTO 0) = "1000" ELSE
+    B_wire <= x"0000" WHEN EX(3 DOWNTO 0) = "0001" OR EX(3 DOWNTO 0) = "0110" OR EX(3 DOWNTO 0) = "1000" OR EX(3 DOWNTO 0) = "1111"  ELSE
         STD_LOGIC_VECTOR(signed(NOT b) + 1) WHEN EX(3 DOWNTO 0) = "0101" ELSE
         x"0001" WHEN EX(3 DOWNTO 0) = "0010" ELSE
         b;

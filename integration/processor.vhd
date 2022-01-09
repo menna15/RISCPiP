@@ -143,7 +143,8 @@ ARCHITECTURE processor_a OF processor IS
                         R_dest_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
                         ALU_out, R_src1_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         PC_flages : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-                        branch_signal : OUT STD_LOGIC);
+                        branch_signal : OUT STD_LOGIC;
+                        Out_port: OUT STD_LOGIC_VECTOR(15 DOWNTO 0));
         END COMPONENT;
         -------------------------
         -- Memory buffer --------
@@ -307,7 +308,7 @@ BEGIN
                 R_dest_address, int_index, IMM_value, immediate);
 
         ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
-        R_src1_address,R_src2_address,R_dest_address,FU_select,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal);
+        R_src1_address,R_src2_address,R_dest_address,FU_select,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
         
         Memory_buffer : alu_memory_buffer PORT MAP (clk,'0',memory_flush_signal,Mout,WR_out(0),R_dest_address_out ,ALU_out, R_src1_out, 
         PC_flages, branch_signal,M_OUT,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
@@ -316,7 +317,4 @@ BEGIN
         WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(1), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
         Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select);
    
-
-
-        outPort <= ALU_out when outPort_signal = '1' else (OTHERS =>'Z');
         END ARCHITECTURE;
