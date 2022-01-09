@@ -42,7 +42,7 @@ entity control_unit is
   PC_mux2          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (M(0) "reset" , M(2) exp1 , M(4) exp2 , index+6 interrupt )---
                                                          -- third mux selector will be the signal do_32_fetch --
   stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
-  alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
+  alu_selector     : out std_logic_vector (4 DOWNTO 0);  -- for selecting alu operation --
 
   exception_selector : out std_logic                      -- for the selector of the mux of the exception depend on exception number from exception flag input --
 
@@ -176,21 +176,23 @@ begin
 
 
 
-    alu_selector <= "1110" when (operation = SETC and immediate_value='0') else
-        "0001" when (operation = NOT_OP and immediate_value='0') else
-        "0010" when (operation = INC and immediate_value='0')    else
-        "0011" when (operation = ADD and immediate_value='0')    else
-        "0100" when ((operation = LDD or operation = STD) and immediate_value='0') else
-        "0101" when (operation = SUB and immediate_value='0')    else
-        "0110" when (operation = AND_OP and immediate_value='0') else
-        "0111" when (operation = IADD and immediate_value='0')   else
-        "1000" when (operation = IN_OP and immediate_value='0')  else
-        "1001" when (operation = JC and immediate_value='0')     else
-        "1010" when (operation = JZ and immediate_value='0')     else
-        "1011" when (operation = JN and immediate_value='0')     else
-        "1100" when ((operation = RET or operation = RTI) and immediate_value='0') else
-        "1111" when (operation = OUT_OP and immediate_value='0') else
-        "1101";
+    alu_selector <= "01110" when (operation = SETC and immediate_value='0') else
+        "00001" when (operation = NOT_OP and immediate_value='0') else
+        "00010" when (operation = INC and immediate_value='0')    else
+        "00011" when (operation = ADD and immediate_value='0')    else
+        "00100" when (operation = LDD and immediate_value='0') else
+        "00101" when (operation = SUB and immediate_value='0')    else
+        "00110" when (operation = AND_OP and immediate_value='0') else
+        "00111" when (operation = IADD and immediate_value='0')   else
+        "01000" when (operation = IN_OP and immediate_value='0')  else
+        "01001" when (operation = JC and immediate_value='0')     else
+        "01010" when (operation = JZ and immediate_value='0')     else
+        "01011" when (operation = JN and immediate_value='0')     else
+        "01100" when ((operation = RET or operation = RTI) and immediate_value='0') else
+        "01111" when (operation = OUT_OP and immediate_value='0') else
+        "10001" when (operation = LDM and immediate_value='0') else
+        "10010" when (operation = STD and immediate_value='0') else
+        "01101";
 
         exception_selector <= '0' when (exception_flag = "01") else
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --

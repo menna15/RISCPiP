@@ -92,7 +92,6 @@ ARCHITECTURE ALUProject_arc OF ALUProject IS
 BEGIN
     A_wire <= NOT a WHEN EX(4 DOWNTO 0) = "00001" ELSE
         a AND b WHEN EX(4 DOWNTO 0) = "00110" ELSE
-        x"0000" when EX(4 DOWNTO 0) = "10001" ELSE
         a;
     B_wire <= x"0000" WHEN EX(4 DOWNTO 0) = "00001" OR EX(4 DOWNTO 0) = "00110" OR EX(4 DOWNTO 0) = "01000" OR EX(4 DOWNTO 0) = "01111"  ELSE
         STD_LOGIC_VECTOR(signed(NOT b) + 1) WHEN EX(4 DOWNTO 0) = "00101" ELSE
@@ -103,11 +102,11 @@ BEGIN
 
     -------------------------------------------------SET FLAGS REGISTERS ENABLE---------------------------------------------
     --we put the condition of or EX(5) to enble registers in case we will take the flags from stack 
-    flags_register_enable(0) <= '1' WHEN EX = "01110" OR EX = "00010" OR EX = "00011" OR EX = "00101" OR EX = "00111" OR EX = "01100" ELSE
+    flags_register_enable(0) <= '1' WHEN EX = "01110" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0111" OR EX = "1100" ELSE
     '0';
-    flags_register_enable(1) <= '1' WHEN EX = "00001" OR EX = "00010" OR EX = "00011" OR EX = "00101" OR EX = "00110" OR EX = "00111" OR EX = "01100" ELSE
+    flags_register_enable(1) <= '1' WHEN EX = "0001" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0110" OR EX = "0111" OR EX = "1100" ELSE
     '0';
-    flags_register_enable(2) <= '1' WHEN EX = "00001" OR EX = "00010" OR EX = "00011" OR EX = "00101" OR EX = "00110" OR EX = "00111" OR EX = "01100" ELSE
+    flags_register_enable(2) <= '1' WHEN EX = "0001" OR EX = "0010" OR EX = "0011" OR EX = "0101" OR EX = "0110" OR EX = "0111" OR EX = "1100" ELSE
     '0';
 
     F_adder : Full_adder  GENERIC MAP(size => 16) PORT MAP(A_wire, B_wire, Cin_wire, F_wire, cout);
@@ -115,7 +114,7 @@ BEGIN
     F <= F_wire;
     ---------------------------------------------------------SET FLAGS------------------------------------------------------
     --one case we won't get the carry from full adder when operation is SETC 
-    C_Z_N_flags(0) <= '1' WHEN EX = "01110" ELSE
+    C_Z_N_flags(0) <= '1' WHEN EX = "1110" ELSE
     cout;
     C_Z_N_flags(1) <= '1' WHEN F_wire = x"0000" ELSE
     '0';

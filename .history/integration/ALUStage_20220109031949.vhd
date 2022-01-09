@@ -141,9 +141,8 @@ BEGIN
 
     Store_inst<= '1' when EX_wire = "10010" else
         '0';
-    
-    Mux2_scr1_scr2 : mux2 GENERIC MAP(size => 16) PORT MAP( R_src1_wire,R_src2_wire, Store_inst,MUX_scr_wire);
-    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, MUX_scr_wire, inport_signal, MUX_2_out_wire);
+    Mux2_scr1_scr2 : mux2 GENERIC MAP(size => 16) PORT MAP( R_src1_wire,R_src2_wire, Store_inst, MUX_2_out_wire);
+    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, R_src1_wire, inport_signal, MUX_2_out_wire);
     Mux2_flags : mux2 GENERIC MAP(size => 3) PORT MAP(C_Z_N_flags_from_stack, C_Z_N_flags_IN_wire, ret_signal, C_Z_N_flags_OUT_wire);
     Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU, ALU_TO_ALU, MUX_2_out_wire, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_1_OP_wire);
     Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, IMM_value, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_2_OP_wire);

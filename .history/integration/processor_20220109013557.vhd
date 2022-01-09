@@ -57,7 +57,7 @@ ARCHITECTURE processor_a OF processor IS
                 PC_mux2          : out std_logic_vector (1 downto 0);  -- selector of the mux that determine the value of PC (M(0) "reset" , M(2) exp1 , M(4) exp2 , index+6 interrupt )---
                                                                         -- third mux selector will be the signal do_32_fetch --
                 stack_memory     : out std_logic;                      -- if 1 stack operations if 0 memory operations --
-                alu_selector     : out std_logic_vector (4 DOWNTO 0);  -- for selecting alu operation --
+                alu_selector     : out std_logic_vector (3 DOWNTO 0);  -- for selecting alu operation --
 
                 exception_selector : out std_logic  );                    -- for the selector of the mux of the exception depend on exception number from exception flag input --
 
@@ -116,7 +116,7 @@ ARCHITECTURE processor_a OF processor IS
 
                         --EX & M & WR signals
 
-                        EX : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+                        EX : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         M : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         WR : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
                         PC : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -219,7 +219,7 @@ ARCHITECTURE processor_a OF processor IS
         SIGNAL pc_mux1 : STD_LOGIC_VECTOR (1 DOWNTO 0);
 	SIGNAL pc_mux2 : STD_LOGIC_VECTOR (1 DOWNTO 0);
         SIGNAL stack_memory_signal : STD_LOGIC; -- if 0 stack operations if 1 memory operations --
-        SIGNAL alu_selector_signal : STD_LOGIC_VECTOR (4 DOWNTO 0); -- for selecting alu operation --
+        SIGNAL alu_selector_signal : STD_LOGIC_VECTOR (3 DOWNTO 0); -- for selecting alu operation --
         SIGNAL exception_selector : STD_LOGIC;
         SIGNAL load_use_flag : STD_LOGIC;
 	SIGNAL load_use_out  : STD_LOGIC;

@@ -93,7 +93,7 @@ ARCHITECTURE ALUStage_arc OF ALUStage IS
     COMPONENT ALUProject IS
         PORT (
             a, b : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-            EX : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+            EX : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
             F : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
             C_Z_N_flags : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
             flags_register_enable : OUT STD_LOGIC_VECTOR(2 DOWNTO 0));
@@ -113,17 +113,15 @@ ARCHITECTURE ALUStage_arc OF ALUStage IS
     ----------------------------------------------------------------------------------------
 
     SIGNAL IN_port_wire, R_src1_wire, R_src2_wire, ALU_TO_ALU_wire, MEM_TO_ALU_wire : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL MUX_2_out_wire, ALU_1_OP_wire, ALU_2_OP_wire,MUX_scr_wire : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL MUX_2_out_wire, ALU_1_OP_wire, ALU_2_OP_wire : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL WR_wire : STD_LOGIC_VECTOR(0 DOWNTO 0);
     SIGNAL M_wire : STD_LOGIC_VECTOR(3 DOWNTO 0);
     SIGNAL R_src1_address_wire, R_src2_address_wire, R_dest_address_wire : STD_LOGIC_VECTOR(2 DOWNTO 0);
-    SIGNAL EX_wire : STD_LOGIC_VECTOR(4 DOWNTO 0);
+    SIGNAL EX_wire : STD_LOGIC_VECTOR(3 DOWNTO 0);
     SIGNAL ret_signal, inport_signal,outport_signal : STD_LOGIC;
     SIGNAL PC_wire : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL C_Z_N_flags_IN_wire, C_Z_N_flags_OUT_wire, flags_reg_enable_wire, OUT_from_flags_reg_wire : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL ALU_out_or_port: STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL Store_inst: STD_LOGIC;
-    
 
     ------------------------------START COMBINE THE COMPONENTS------------------
 BEGIN
@@ -131,23 +129,18 @@ BEGIN
         WR, M, R_src1_address, R_src2_address, R_dest_address, EX, in_port, R_src1, R_src2, PC, clk, reset, en,
         WR_wire, M_wire, R_src1_address_wire, R_src2_address_wire, R_dest_address_wire, EX_wire, IN_port_wire, R_src1_wire, R_src2_wire, PC_wire);
 
-    outport_signal <= '1' WHEN EX_wire = "01111" ELSE
+    outport_signal <= '1' WHEN EX_wire = "1111" ELSE
         '0';
     --set ret_signal and inport depend on the EX code
-    inport_signal <= '0' WHEN EX_wire = "01000" ELSE
+    inport_signal <= '0' WHEN EX_wire = "1000" ELSE
         '1';
-    ret_signal <= '0' WHEN EX_wire = "01100" ELSE
+    ret_signal <= '0' WHEN EX_wire = "1100" ELSE
         '1';
-
-    Store_inst<= '1' when EX_wire = "10010" else
-        '0';
-    
-    Mux2_scr1_scr2 : mux2 GENERIC MAP(size => 16) PORT MAP( R_src1_wire,R_src2_wire, Store_inst,MUX_scr_wire);
-    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, MUX_scr_wire, inport_signal, MUX_2_out_wire);
+    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, R_src1_wire, inport_signal, MUX_2_out_wire);
     Mux2_flags : mux2 GENERIC MAP(size => 3) PORT MAP(C_Z_N_flags_from_stack, C_Z_N_flags_IN_wire, ret_signal, C_Z_N_flags_OUT_wire);
     Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU, ALU_TO_ALU, MUX_2_out_wire, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_1_OP_wire);
     Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, IMM_value, forwarding_unit_selector(0), forwarding_unit_selector(1), ALU_2_OP_wire);
-    
+
     ALU : ALUProject PORT MAP(ALU_1_OP_wire, ALU_2_OP_wire, EX_wire, ALU_out_or_port, C_Z_N_flags_IN_wire, flags_reg_enable_wire);
 
     --flag registers
@@ -156,7 +149,7 @@ BEGIN
     negative_reg : reg_fall_edge PORT MAP(C_Z_N_flags_OUT_wire(2), clk, reset, flags_reg_enable_wire(2), OUT_from_flags_reg_wire(2));
 
     --handle branching
-    branch_signal <= '1' WHEN (EX_wire = "01001" AND OUT_from_flags_reg_wire(0) = '1') OR (EX_wire = "01010" AND OUT_from_flags_reg_wire(1) = '1') OR (EX_wire = "01011" AND OUT_from_flags_reg_wire(2) = '1') ELSE
+    branch_signal <= '1' WHEN (EX_wire = "1001" AND OUT_from_flags_reg_wire(0) = '1') OR (EX_wire = "1010" AND OUT_from_flags_reg_wire(1) = '1') OR (EX_wire = "1011" AND OUT_from_flags_reg_wire(2) = '1') ELSE
         '0';
 
     --concatenate PC with Flages for the next stage
@@ -167,7 +160,7 @@ BEGIN
     R_dest_address_out <= R_dest_address_wire;
     R_src1_out <= R_src1_wire;
     ALU_out<= ALU_out_or_port;
-    Out_port<= ALU_out_or_port when  EX_wire = "01111" else
+    Out_port<= ALU_out_or_port when  EX_wire = "1111" else
     (others=>'Z');
 
 END ARCHITECTURE;

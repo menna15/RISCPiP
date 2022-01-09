@@ -92,7 +92,6 @@ ARCHITECTURE ALUProject_arc OF ALUProject IS
 BEGIN
     A_wire <= NOT a WHEN EX(4 DOWNTO 0) = "00001" ELSE
         a AND b WHEN EX(4 DOWNTO 0) = "00110" ELSE
-        x"0000" when EX(4 DOWNTO 0) = "10001" ELSE
         a;
     B_wire <= x"0000" WHEN EX(4 DOWNTO 0) = "00001" OR EX(4 DOWNTO 0) = "00110" OR EX(4 DOWNTO 0) = "01000" OR EX(4 DOWNTO 0) = "01111"  ELSE
         STD_LOGIC_VECTOR(signed(NOT b) + 1) WHEN EX(4 DOWNTO 0) = "00101" ELSE
@@ -115,7 +114,7 @@ BEGIN
     F <= F_wire;
     ---------------------------------------------------------SET FLAGS------------------------------------------------------
     --one case we won't get the carry from full adder when operation is SETC 
-    C_Z_N_flags(0) <= '1' WHEN EX = "01110" ELSE
+    C_Z_N_flags(0) <= '1' WHEN EX = "1110" ELSE
     cout;
     C_Z_N_flags(1) <= '1' WHEN F_wire = x"0000" ELSE
     '0';

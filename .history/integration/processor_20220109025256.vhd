@@ -116,7 +116,7 @@ ARCHITECTURE processor_a OF processor IS
 
                         --EX & M & WR signals
 
-                        EX : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+                        EX : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         M : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         WR : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
                         PC : IN STD_LOGIC_VECTOR(31 DOWNTO 0);

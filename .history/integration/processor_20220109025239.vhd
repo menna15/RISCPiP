@@ -116,7 +116,7 @@ ARCHITECTURE processor_a OF processor IS
 
                         --EX & M & WR signals
 
-                        EX : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+                        EX : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         M : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
                         WR : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
                         PC : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -219,7 +219,7 @@ ARCHITECTURE processor_a OF processor IS
         SIGNAL pc_mux1 : STD_LOGIC_VECTOR (1 DOWNTO 0);
 	SIGNAL pc_mux2 : STD_LOGIC_VECTOR (1 DOWNTO 0);
         SIGNAL stack_memory_signal : STD_LOGIC; -- if 0 stack operations if 1 memory operations --
-        SIGNAL alu_selector_signal : STD_LOGIC_VECTOR (4 DOWNTO 0); -- for selecting alu operation --
+        SIGNAL alu_selector_signal : STD_LOGIC_VECTOR (3 DOWNTO 0); -- for selecting alu operation --
         SIGNAL exception_selector : STD_LOGIC;
         SIGNAL load_use_flag : STD_LOGIC;
 	SIGNAL load_use_out  : STD_LOGIC;
