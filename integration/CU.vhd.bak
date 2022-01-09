@@ -147,15 +147,15 @@ begin
 
     reset_out <= '1' when (reset_in = '1') else '0';
 
-    memRead  <= '1' when ((operation = LDD or operation = POP or operation = RET or operation = RTI) and immediate_value = '0') else '0' ;
-    memWrite <= '1' when ((operation = PUSH or operation = STD or operation = CALL or operation = INT) and immediate_value = '0') else '0' ;
-    inPort   <= '1' when (operation = IN_OP and immediate_value='0')  else '0';
-    outPort  <= '1' when (operation = OUT_OP and immediate_value='0') else '0';
+    memRead  <= '1' when (operation = LDD or operation = POP or operation = RET or operation = RTI ) else '0' ;
+    memWrite <= '1' when (operation = PUSH or operation = STD or operation = CALL or operation = INT) else '0' ;
+    inPort   <= '1' when (operation = IN_OP)  else '0';
+    outPort  <= '1' when (operation = OUT_OP) else '0';
 
-    regFileWrite_en <= '1' when ((operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
-     or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) and immediate_value='0') else '0';
+    regFileWrite_en <= '1' when (operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
+     or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) else '0';
 
-    imm_value   <= '1' when ((operation = LDD or operation = STD or operation = LDM or operation = IADD)and immediate_value='0') else '0';
+    imm_value   <= '1' when (operation = LDD or operation = STD or operation = LDM or operation = IADD) else '0';
 
     PC_mux1     <= "01"  when (temp_R = '1' or temp_E = '1' or temp_I = '1') else
         "10"  when (temp_RET = 3 or temp_RI = 3)  else
@@ -170,45 +170,44 @@ begin
                     
 
     -- if 1 stack operation , if 0 memory operation --
-
-    stack_memory   <= '1' when ((operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH)and immediate_value='0') else 
-    '0'  when ((operation = LDD or operation = LDM or operation = STD)and immediate_value='0');
-
+    stack_memory   <= '1' when (operation = RET or operation = RTI or operation= CALL or operation = INT or operation = POP or operation= PUSH) else 
+    '0'  when (operation = LDD or operation = LDM or operation = STD);
 
 
-    alu_selector <= "1110" when (operation = SETC and immediate_value='0') else
-        "0001" when (operation = NOT_OP and immediate_value='0') else
-        "0010" when (operation = INC and immediate_value='0')    else
-        "0011" when (operation = ADD and immediate_value='0')    else
-        "0100" when ((operation = LDD or operation = STD) and immediate_value='0') else
-        "0101" when (operation = SUB and immediate_value='0')    else
-        "0110" when (operation = AND_OP and immediate_value='0') else
-        "0111" when (operation = IADD and immediate_value='0')   else
-        "1000" when (operation = IN_OP and immediate_value='0')  else
-        "1001" when (operation = JC and immediate_value='0')     else
-        "1010" when (operation = JZ and immediate_value='0')     else
-        "1011" when (operation = JN and immediate_value='0')     else
-        "1100" when ((operation = RET or operation = RTI) and immediate_value='0') else
-        "1111" when (operation = OUT_OP and immediate_value='0') else
+
+    alu_selector <= "1110" when (operation = SETC) else
+        "0001" when (operation = NOT_OP) else
+        "0010" when (operation = INC)    else
+        "0011" when (operation = ADD)    else
+        "0100" when (operation = LDD or operation = STD) else
+        "0101" when (operation = SUB)    else
+        "0110" when (operation = AND_OP) else
+        "0111" when (operation = IADD)   else
+        "1000" when (operation = IN_OP)  else
+        "1001" when (operation = JC)     else
+        "1010" when (operation = JZ)     else
+        "1011" when (operation = JN)     else
+        "1100" when (operation = RET or operation = RTI) else
+        "1111" when (operation = OUT_OP ) else
         "1101";
 
         exception_selector <= '0' when (exception_flag = "01") else
             '1' when (exception_flag = "10") else '0'; -- else could be 0 or 1 since the next mux will not choose the value if the exception flag = 00 --
         
 
-        pc_freeze    <= '1' when ((load_use = '1' and temp_load_use /= '1') or (operation = HLT and immediate_value='0' and reset_in = '0')) else '0';
+        pc_freeze    <= '1' when ((load_use = '1' and temp_load_use /= '1') or operation = HLT) else '0';
         stall        <= '1' when (load_use = '1' and temp_load_use /= '1') else '0';
         -- registers_en <= '0' when (load_use = '1' and temp_load_use /= '1') else '1';
         registers_en <= '1';
         --
-        load_flag    <= '1' when (operation = POP and immediate_value='0') else '0';
-        do_32_memory <= '1' when ((operation = CALL or operation = INT or operation = RET or operation = RTI) and immediate_value='0') else '0';
-        do_32_fetch  <= '1' when ((operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') and immediate_value='0') else '0';
-        fetch_flush  <= '1' when ((reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
-                         temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or  operation = HLT or branch_signal='1') and immediate_value='0') else '0';
+        load_flag    <= '1' when (operation = POP ) else '0';
+        do_32_memory <= '1' when (operation = CALL or operation = INT or operation = RET or operation = RTI) else '0';
+        do_32_fetch  <= '1' when (operation = INT or exception_flag = "01" or exception_flag = "10" or reset_in = '1') else '0';
+        fetch_flush  <= '1' when (reset_in = '1' or operation = INT or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
+                         temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or  operation = HLT or branch_signal='1') else '0';
         decode_flush <= '1' when (reset_in = '1' or  branch_signal='1' or immediate_value = '1') else '0';
         memory_flush <= '1' when (reset_in = '1')  else '0';
         WB_flush     <= '1' when (reset_in = '1')  else '0';
-        interrupt    <= '1' when (operation = INT and immediate_value='0') else '0';
+        interrupt    <= '1' when (operation = INT) else '0';
             
 end architecture;
