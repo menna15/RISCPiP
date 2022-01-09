@@ -139,7 +139,6 @@ BEGIN
         '1';
     ret_signal <= '0' WHEN EX_wire = "01100" ELSE
         '1';
-
     store_inst <= '1' WHEN EX_wire = "10010" ELSE
         '0';    
     Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port,  R_src1_wire, inport_signal, MUX_2_out_wire);

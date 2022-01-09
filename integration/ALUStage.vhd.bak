@@ -122,7 +122,9 @@ ARCHITECTURE ALUStage_arc OF ALUStage IS
     SIGNAL ret_signal, inport_signal,outport_signal : STD_LOGIC;
     SIGNAL PC_wire : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL C_Z_N_flags_IN_wire, C_Z_N_flags_OUT_wire, flags_reg_enable_wire, OUT_from_flags_reg_wire : STD_LOGIC_VECTOR(2 DOWNTO 0);
-    SIGNAL ALU_out_or_port: STD_LOGIC_VECTOR(15 DOWNTO 0);    
+    SIGNAL ALU_out_or_port: STD_LOGIC_VECTOR(15 DOWNTO 0); 
+    SIGNAL Rsrc1_mux_out1, Rsrc1_mux_out2: STD_LOGIC_VECTOR(15 DOWNTO 0);    
+    SIGNAL store_inst : std_logic ;
 
     ------------------------------START COMBINE THE COMPONENTS------------------
 BEGIN
@@ -137,13 +139,22 @@ BEGIN
         '1';
     ret_signal <= '0' WHEN EX_wire = "01100" ELSE
         '1';
-    
+<<<<<<< HEAD
+
+    store_inst <= '1' WHEN EX_wire = "10010" ELSE
+        '0';    
     Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port,  R_src1_wire, inport_signal, MUX_2_out_wire);
+=======
+        
+    Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port, R_src1_wire, inport_signal, MUX_2_out_wire);
+>>>>>>> 1a528fe75afa29bb45d32960763ec0eb8370bb63
     Mux2_flags : mux2 GENERIC MAP(size => 3) PORT MAP(C_Z_N_flags_from_stack, C_Z_N_flags_IN_wire, ret_signal, C_Z_N_flags_OUT_wire);
     Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU, ALU_TO_ALU, MUX_2_out_wire, forwarding_unit_selector1(0), forwarding_unit_selector1(1), ALU_1_OP_wire);
     Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, IMM_value, forwarding_unit_selector2(0), forwarding_unit_selector2(1), ALU_2_OP_wire);
-    Mux4_Rsrc_1 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src1_wire, MEM_TO_ALU, ALU_TO_ALU, R_src1_wire, forwarding_unit_selector1(0), forwarding_unit_selector1(1), R_src1_out);
+    Mux4_Rsrc_1 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src1_wire, MEM_TO_ALU, ALU_TO_ALU, R_src1_wire, forwarding_unit_selector1(0), forwarding_unit_selector1(1), Rsrc1_mux_out1);
+    Mux4_Rsrc_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, R_src2_wire, forwarding_unit_selector2(0), forwarding_unit_selector2(1), Rsrc1_mux_out2);
 
+    Mux2_Rsrc1 : mux2 GENERIC MAP(size => 16) PORT MAP(Rsrc1_mux_out1,Rsrc1_mux_out2, store_inst, R_src1_out);
     ALU : ALUProject PORT MAP(ALU_1_OP_wire, ALU_2_OP_wire, EX_wire, ALU_out_or_port, C_Z_N_flags_IN_wire, flags_reg_enable_wire);
 
     --flag registers
