@@ -127,7 +127,8 @@ ARCHITECTURE processor_a OF processor IS
 
                         --input from forwarding unit
 
-                        forwarding_unit_selector : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+                        forwarding_unit_selector1 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+                        forwarding_unit_selector2 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 
                         --for registers in this stage
 
@@ -170,7 +171,7 @@ ARCHITECTURE processor_a OF processor IS
             clk, Imm_Signal: IN STD_LOGIC;
             WR_Mem_WB, WR_Ex_Mem: IN STD_LOGIC;
             R_dest_Mem_WB,R_dest_Ex_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            Sel : OUT STD_LOGIC_VECTOR(1 DOWNTO 0));
+            Sel1,Sel2 : OUT STD_LOGIC_VECTOR(1 DOWNTO 0));
         END COMPONENT;
         -- Memory component -----
         COMPONENT MEMStage is 
@@ -273,7 +274,8 @@ ARCHITECTURE processor_a OF processor IS
         SIGNAL reg_dst_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
         SIGNAL write_back_data_out : STD_LOGIC_VECTOR(15 DOWNTO 0);
         SIGNAL write_back_signal_out : STD_LOGIC;
-        SIGNAL FU_select : STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL FU_select1 : STD_LOGIC_VECTOR(1 DOWNTO 0);
+        SIGNAL FU_select2 : STD_LOGIC_VECTOR(1 DOWNTO 0);
         ------------
         -----------------------------------TEMP VARIABLIES---------------------------
         SIGNAL Temp_index : STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -307,14 +309,14 @@ BEGIN
                  write_back_data_out, reg_dst_address_out,R_src1, R_src2, opcode, R_src1_address, R_src2_address,
                 R_dest_address, int_index, IMM_value, immediate);
 
-        ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),DO1,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
-        R_src1_address,R_src2_address,R_dest_address,FU_select,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
+        ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),write_back_data_out,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
+        R_src1_address,R_src2_address,R_dest_address,FU_select1,FU_select2,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
         
         Memory_buffer : alu_memory_buffer PORT MAP (clk,'0',memory_flush_signal,Mout,WR_out(0),R_dest_address_out ,ALU_out, R_src1_out, 
         PC_flages, branch_signal,M_OUT,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
         
         Memory_stage  : MEMStage  PORT MAP(M_OUT(1),M_OUT(0),reset_out_signal,M_OUT(2),clk,M_OUT(3),ALU_OUT_memory,R_src1_OUT_memory,PC_flags_OUT ,exception_flag,DO1,DO2);
         WB : memory_write_back_buffer PORT MAP(ALU_OUT_memory(15 DOWNTO 0), DO1, clk, WB_OUT, M_OUT(0), R_dest_address_OUT_memory, reg_dst_address_out, write_back_data_out, write_back_signal_out);
-        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select);
+        Forwarding_Unit: FU PORT MAP(R_src1_address, R_src2_address, clk, immediate, WB_OUT, WR_out(0), R_dest_address_OUT_memory, R_dest_address_out, FU_select1,FU_select2);
    
         END ARCHITECTURE;

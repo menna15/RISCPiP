@@ -192,6 +192,8 @@ begin
         "01111" when (operation = OUT_OP and immediate_value /= '1') else
         "10001" when (operation = LDM and immediate_value /= '1') else
         "10010" when (operation = STD and immediate_value /= '1') else
+        "10011" when (operation = MOV and immediate_value /= '1') else
+        "10100" when (operation = PUSH and immediate_value /= '1') else
         "01101";
 
         exception_selector <= '0' when (exception_flag = "01") else

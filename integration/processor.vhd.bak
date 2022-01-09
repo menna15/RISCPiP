@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 LIBRARYLIBRARY ieee;
+=======
+LIBRARY ieee;
+>>>>>>> 346fd638e1a63bc6de7a01f6451968bc6699a8ce
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 LIBRARY work;
@@ -300,7 +304,11 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
+<<<<<<< HEAD
         hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,M_OUT, R_dest_address_OUT_memory , load_use_flag);
+=======
+        hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,memory_signals, R_dest_address_OUT_memory , load_use_flag);
+>>>>>>> 346fd638e1a63bc6de7a01f6451968bc6699a8ce
 
         Decode : DecodeStage PORT MAP(
                 reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
