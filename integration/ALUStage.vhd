@@ -38,7 +38,7 @@ ENTITY ALUStage IS
 
         M_out : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
         WR_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
-        R_dest_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        R_dest_address_out,R_src1_address_out,R_src2_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         ALU_out, R_src1_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
         PC_flages : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         branch_signal : OUT STD_LOGIC;
@@ -166,6 +166,8 @@ BEGIN
     M_out <= M_wire;
     WR_out <= WR_wire;
     R_dest_address_out <= R_dest_address_wire;
+    R_src1_address_out<=R_src1_address_wire;
+    R_src2_address_out<=R_src2_address_wire;
     R_src1_out <= R_src1_wire;
     ALU_out<= ALU_out_or_port;
     Out_port<= ALU_out_or_port when  EX_wire = "01111" else

@@ -141,7 +141,7 @@ ARCHITECTURE processor_a OF processor IS
 
                         M_out : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
                         WR_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
-                        R_dest_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+                        R_dest_address_out,R_src1_address_out,R_src2_address_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
                         ALU_out, R_src1_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
                         PC_flages : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
                         branch_signal : OUT STD_LOGIC;
@@ -250,7 +250,7 @@ ARCHITECTURE processor_a OF processor IS
 
         -- ALU ---
 
-        SIGNAL R_dest_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
+        SIGNAL R_dest_address_out,R_src1_address_out,R_src2_address_out : STD_LOGIC_VECTOR(2 DOWNTO 0);
         SIGNAL memory_signals : STD_LOGIC_VECTOR (3 DOWNTO 0);
         SIGNAL C_Z_N_flags_from_stack : STD_LOGIC_VECTOR (2 DOWNTO 0);
         SIGNAL Mout : STD_LOGIC_VECTOR(3 DOWNTO 0);
@@ -302,7 +302,7 @@ BEGIN
         Fetch : FetchStage PORT MAP(clk, reset, do_32_fetch_signal,pc_freeze,interrupt_signal,pc_mux1,index_extended,pc_from_stack,pc_from_alu_extended,pc_mux2,
                                    pc_to_alu,instruction);
 
-        hazard : HazardUnit PORT MAP(R_src1_address,R_src2_address,M_OUT, R_dest_address_OUT_memory , load_use_flag);
+        hazard : HazardUnit PORT MAP(R_src1_address_out,R_src2_address_out,M_OUT, R_dest_address_OUT_memory , load_use_flag);
 
         Decode : DecodeStage PORT MAP(
                 reset, clk, fetch_flush_signal, stall, imm_value_signal, write_back_signal_out,instruction,
@@ -310,7 +310,7 @@ BEGIN
                 R_dest_address, int_index, IMM_value, immediate);
 
         ALU : ALUStage  PORT MAP(inPort,R_src1,R_src2,ALU_OUT_memory(15 downto 0),write_back_data_out,IMM_value,alu_selector_signal,memory_signals,regFileWrite_signal_alu,pc_to_alu,
-        R_src1_address,R_src2_address,R_dest_address,FU_select1,FU_select2,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
+        R_src1_address,R_src2_address,R_dest_address,FU_select1,FU_select2,clk,reset_out_signal,regs_en,DO2(15 downto 13),Mout,WR_out,R_dest_address_out,R_src1_address_out,R_src2_address_out,ALU_out,R_src1_out,PC_flages,branch_signal,outPort);
         
         Memory_buffer : alu_memory_buffer PORT MAP (clk,'0',memory_flush_signal,Mout,WR_out(0),R_dest_address_out ,ALU_out, R_src1_out, 
         PC_flages, branch_signal,M_OUT,WB_OUT,R_dest_address_OUT_memory,R_src1_OUT_memory,PC_flags_OUT,ALU_OUT_memory);
