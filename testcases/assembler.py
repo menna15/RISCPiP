@@ -417,38 +417,39 @@ for i in range(len(lines)):
                 reg = line[1].split(',')
                 reg_offset = reg[1].split('(')
                 array[array_counter + 1] = '{0:016b}'.format(int(reg_offset[0], 16))
-                if(reg[0] == 'R0'): 
-                    array[array_counter] = "000000" + array[array_counter]
-                if(reg[0] == 'R1'): 
-                    array[array_counter] = "000001" + array[array_counter]
-                if(reg[0] == 'R2'): 
-                    array[array_counter] = "000010" + array[array_counter]
-                if(reg[0] == 'R3'): 
-                    array[array_counter] = "000011" + array[array_counter]
-                if(reg[0] == 'R4'): 
-                    array[array_counter] = "000100" + array[array_counter]
-                if(reg[0] == 'R5'): 
-                    array[array_counter] = "000101" + array[array_counter]
-                if(reg[0] == 'R6'): 
-                    array[array_counter] = "000110" + array[array_counter]
-                if(reg[0] == 'R7'): 
-                    array[array_counter] = "000111" + array[array_counter]
-                ############### destination
+                ############### Rsrc 1
                 if(reg_offset[1] == 'R0)'): 
-                    array[array_counter] = "00000" + array[array_counter]
+                    array[array_counter] = "000000" + array[array_counter]
                 if(reg_offset[1] == 'R1)'): 
-                    array[array_counter] = "00001" + array[array_counter]
+                    array[array_counter] = "000001" + array[array_counter]
                 if(reg_offset[1] == 'R2)'): 
-                    array[array_counter] = "00010" + array[array_counter]
+                    array[array_counter] = "000010" + array[array_counter]
                 if(reg_offset[1] == 'R3)'): 
-                    array[array_counter] = "00011" + array[array_counter]
+                    array[array_counter] = "000011" + array[array_counter]
                 if(reg_offset[1] == 'R4)'): 
-                    array[array_counter] = "00100" + array[array_counter]
+                    array[array_counter] = "000100" + array[array_counter]
                 if(reg_offset[1] == 'R5)'): 
-                    array[array_counter] = "00101" + array[array_counter]
+                    array[array_counter] = "000101" + array[array_counter]
                 if(reg_offset[1] == 'R6)'): 
-                    array[array_counter] = "00110" + array[array_counter]
+                    array[array_counter] = "000110" + array[array_counter]
                 if(reg_offset[1] == 'R7)'): 
+                    array[array_counter] = "000111" + array[array_counter]
+                ################ destination
+                if(reg[0] == 'R0'): 
+                    array[array_counter] = "00000" + array[array_counter]
+                if(reg[0] == 'R1'): 
+                    array[array_counter] = "00001" + array[array_counter]
+                if(reg[0] == 'R2'): 
+                    array[array_counter] = "00010" + array[array_counter]
+                if(reg[0] == 'R3'): 
+                    array[array_counter] = "00011" + array[array_counter]
+                if(reg[0] == 'R4'): 
+                    array[array_counter] = "00100" + array[array_counter]
+                if(reg[0] == 'R5'): 
+                    array[array_counter] = "00101" + array[array_counter]
+                if(reg[0] == 'R6'): 
+                    array[array_counter] = "00110" + array[array_counter]
+                if(reg[0] == 'R7'): 
                     array[array_counter] = "00111" + array[array_counter]
                 array_counter += 2
             if(lines[i].startswith("STD")):
@@ -458,38 +459,38 @@ for i in range(len(lines)):
                 array[array_counter + 1] = '{0:016b}'.format(int(reg_offset[0], 16))
                 ############### source 2
                 if(reg_offset[1] == 'R0)'): 
-                    array[array_counter] = "000000" + array[array_counter]
+                    array[array_counter] = "000" + array[array_counter]
                 if(reg_offset[1] == 'R1)'): 
-                    array[array_counter] = "000001" + array[array_counter]
+                    array[array_counter] = "001" + array[array_counter]
                 if(reg_offset[1] == 'R2)'): 
-                    array[array_counter] = "000010" + array[array_counter]
+                    array[array_counter] = "010" + array[array_counter]
                 if(reg_offset[1] == 'R3)'): 
-                    array[array_counter] = "000011" + array[array_counter]
+                    array[array_counter] = "011" + array[array_counter]
                 if(reg_offset[1] == 'R4)'): 
-                    array[array_counter] = "000100" + array[array_counter]
+                    array[array_counter] = "100" + array[array_counter]
                 if(reg_offset[1] == 'R5)'): 
-                    array[array_counter] = "000101" + array[array_counter]
+                    array[array_counter] = "101" + array[array_counter]
                 if(reg_offset[1] == 'R6)'): 
-                    array[array_counter] = "000110" + array[array_counter]
+                    array[array_counter] = "110" + array[array_counter]
                 if(reg_offset[1] == 'R7)'): 
-                    array[array_counter] = "000111" + array[array_counter]
+                    array[array_counter] = "111" + array[array_counter]
                 ############## source 1
                 if(reg[0] == 'R0'): 
-                    array[array_counter] = "00000" + array[array_counter]
+                    array[array_counter] = "00000000" + array[array_counter]
                 if(reg[0] == 'R1'): 
-                    array[array_counter] = "00001" + array[array_counter]
+                    array[array_counter] = "00000001" + array[array_counter]
                 if(reg[0] == 'R2'): 
-                    array[array_counter] = "00010" + array[array_counter]
+                    array[array_counter] = "00000010" + array[array_counter]
                 if(reg[0] == 'R3'): 
-                    array[array_counter] = "00011" + array[array_counter]
+                    array[array_counter] = "00000011" + array[array_counter]
                 if(reg[0] == 'R4'): 
-                    array[array_counter] = "00100" + array[array_counter]
+                    array[array_counter] = "00000100" + array[array_counter]
                 if(reg[0] == 'R5'): 
-                    array[array_counter] = "10001" + array[array_counter]
+                    array[array_counter] = "00000101" + array[array_counter]
                 if(reg[0] == 'R6'): 
-                    array[array_counter] = "00110" + array[array_counter]
+                    array[array_counter] = "00000110" + array[array_counter]
                 if(reg[0] == 'R7'): 
-                    array[array_counter] = "00111" + array[array_counter]
+                    array[array_counter] = "00000111" + array[array_counter]
                 array_counter += 2
             ################################ branch (JZ, JN, JC, JMP, CALL) same of (OUT) & (RET) same of (IN)
             if(lines[i].startswith("INT")):

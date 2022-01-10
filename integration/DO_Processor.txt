@@ -1,9 +1,50 @@
 vsim -gui work.processor
-mem load -i {C:/Projects/Arch/RISCPiP/testcases/Memory.mem} -format binary -startaddress 0 -endaddress 1999 /processor/Fetch/memory/ram
+mem load -i {D:/CMP/fifth term/Computer Architecture/test_project/Memory.mem} -format binary -startaddress 0 -endaddress 1999 /processor/Fetch/memory/ram
 add wave -position insertpoint sim:/processor/*
 add wave -position insertpoint sim:/processor/Forwarding_Unit/*
 add wave -position insertpoint sim:/processor/ALU/*
+add wave -position insertpoint sim:/processor/CU/*
+add wave -position insertpoint sim:/processor/Fetch/*
+add wave -position insertpoint sim:/processor/Decode/myRegFile/*
+add wave -position insertpoint sim:/processor/Memory_stage/SP/*
 force -freeze sim:/processor/clk 1 0, 0 {50 ps} -r 100
 force -freeze sim:/processor/reset 1 0
 run
 force -freeze sim:/processor/reset 0 0
+run
+# TwoOperand
+#run
+#force -freeze sim:/processor/inPort 16#5 0
+#run
+#force -freeze sim:/processor/inPort 16#19 0
+#run
+#force -freeze sim:/processor/inPort 16#ffff 0
+#run
+#force -freeze sim:/processor/inPort 16#F320 0
+#run
+#branch
+#force -freeze sim:/processor/inPort 16#30 0
+#run
+#force -freeze sim:/processor/inPort 16#50 0
+#run
+#force -freeze sim:/processor/inPort 16#100 0
+#run
+#force -freeze sim:/processor/inPort 16#300 0
+#run
+# one operand
+#run
+#run
+#force -freeze sim:/processor/inPort 16#5 0
+#run
+#run
+#run
+#force -freeze sim:/processor/inPort 16#10 0
+run
+force -freeze sim:/processor/inPort 16#19 0
+run
+force -freeze sim:/processor/inPort 16#ffff 0
+run
+force -freeze sim:/processor/inPort 16#f320 0
+run
+force -freeze sim:/processor/inPort 16#FD60 0
+run

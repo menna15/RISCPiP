@@ -20,8 +20,8 @@ SIGNAL ram : ram_type ;
 SIGNAL exception_signal : std_logic_vector(1 downto 0);
 begin
 
-exception_signal<="10" WHEN ((DataIn2(13) ='1' or to_integer(unsigned(Address)) >= 65280 ) and StackSignal='0') else
-"01" when (to_integer(unsigned(Address)) > 1048575 and StackSignal='1' and MEM_Read ='1') else
+exception_signal<="01" WHEN ((DataIn2(13) ='1' or to_integer(unsigned(Address)) >= 65280 ) and StackSignal='0') else
+"10" when (to_integer(unsigned(Address)) > 1048575 and StackSignal='1' and MEM_Read ='1') else
 "00";
 ExceptionFlag <= exception_signal;
 process(clk)

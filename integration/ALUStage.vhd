@@ -26,6 +26,8 @@ ENTITY ALUStage IS
 
         forwarding_unit_selector1 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
         forwarding_unit_selector2 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        forwarding_unit_selector3 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+
 
         --for registers in this stage
 
@@ -140,13 +142,13 @@ BEGIN
     ret_signal <= '0' WHEN EX_wire = "01100" ELSE
         '1';
     store_inst <= '1' WHEN EX_wire = "10010" ELSE
-        '0';    
+        '0';
     Mux2_ALU_OP_1 : mux2 GENERIC MAP(size => 16) PORT MAP(IN_port,  R_src1_wire, inport_signal, MUX_2_out_wire);
     Mux2_flags : mux2 GENERIC MAP(size => 3) PORT MAP(C_Z_N_flags_from_stack, C_Z_N_flags_IN_wire, ret_signal, C_Z_N_flags_OUT_wire);
     Mux4_OP_1 : mux4 GENERIC MAP(size => 16) PORT MAP(MUX_2_out_wire, MEM_TO_ALU, ALU_TO_ALU, MUX_2_out_wire, forwarding_unit_selector1(0), forwarding_unit_selector1(1), ALU_1_OP_wire);
     Mux4_OP_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, IMM_value, forwarding_unit_selector2(0), forwarding_unit_selector2(1), ALU_2_OP_wire);
     Mux4_Rsrc_1 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src1_wire, MEM_TO_ALU, ALU_TO_ALU, R_src1_wire, forwarding_unit_selector1(0), forwarding_unit_selector1(1), Rsrc1_mux_out1);
-    Mux4_Rsrc_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, R_src2_wire, forwarding_unit_selector2(0), forwarding_unit_selector2(1), Rsrc1_mux_out2);
+    Mux4_Rsrc_2 : mux4 GENERIC MAP(size => 16) PORT MAP(R_src2_wire, MEM_TO_ALU, ALU_TO_ALU, R_src2_wire, forwarding_unit_selector3(0), forwarding_unit_selector3(1), Rsrc1_mux_out2);
 
     Mux2_Rsrc1 : mux2 GENERIC MAP(size => 16) PORT MAP(Rsrc1_mux_out1,Rsrc1_mux_out2, store_inst, R_src1_out);
     ALU : ALUProject PORT MAP(ALU_1_OP_wire, ALU_2_OP_wire, EX_wire, ALU_out_or_port, C_Z_N_flags_IN_wire, flags_reg_enable_wire);
