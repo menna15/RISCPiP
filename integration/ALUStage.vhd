@@ -59,7 +59,7 @@ ARCHITECTURE ALUStage_arc OF ALUStage IS
 
             WR : IN STD_LOGIC_VECTOR (0 DOWNTO 0);
             M : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
-	    R_src1_address, R_src2_address, R_dest_address : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+	        R_src1_address, R_src2_address, R_dest_address : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
             EX : IN STD_LOGIC_VECTOR (4 DOWNTO 0);
             in_port, R_src1, R_src2 : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
             PC : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -68,7 +68,7 @@ ARCHITECTURE ALUStage_arc OF ALUStage IS
 
             WR_out : OUT STD_LOGIC_VECTOR (0 DOWNTO 0);
             M_out : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
-	    R_src1_address_out, R_src2_address_out, R_dest_address_out : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+	        R_src1_address_out, R_src2_address_out, R_dest_address_out : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
             EX_out : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
             in_port_out, R_src1_out, R_src2_out : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
             PC_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0));

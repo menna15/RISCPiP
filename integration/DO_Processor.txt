@@ -6,7 +6,7 @@ add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/CU/*
 add wave -position insertpoint sim:/processor/Fetch/*
 add wave -position insertpoint sim:/processor/Decode/myRegFile/*
-add wave -position insertpoint sim:/processor/Memory_stage/SP/*
+add wave -position insertpoint sim:/processor/Memory_stage/*
 force -freeze sim:/processor/clk 1 0, 0 {50 ps} -r 100
 force -freeze sim:/processor/reset 1 0
 run

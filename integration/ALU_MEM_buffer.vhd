@@ -6,16 +6,16 @@ use ieee.std_logic_1164.all;
 ENTITY
 alu_memory_buffer IS
 PORT (  clk,stall_signal,flush_signal: IN std_logic;
-	M_IN : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		M_IN : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
         WB_IN : IN STD_LOGIC;
         R_dest_address_in : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         ALU_in, R_src1_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
         PC_flags_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);            --pc & flags to be pushed into memory.
         branch_signal : IN STD_LOGIC;
 
-	M_OUT : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+		M_OUT : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
         WB_OUT : OUT STD_LOGIC;
-	R_dest_address_OUT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+		R_dest_address_OUT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         R_src1_OUT : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
         PC_flags_OUT,ALU_OUT : OUT std_logic_vector(31 downto 0));    --DataIn1 carries data to be read if it is a 16-bit operation , DataIn1&DataIn2 when it is a 32-bi.
 END ENTITY alu_memory_buffer;

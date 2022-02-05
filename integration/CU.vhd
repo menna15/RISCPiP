@@ -147,13 +147,13 @@ begin
 
     reset_out <= '1' when (reset_in = '1') else '0';
 
-    memRead  <= '1' when ((operation = LDD or operation = POP or operation = RET or operation = RTI) and immediate_value /= '1') else '0' ;
-    memWrite <= '1' when ((operation = PUSH or operation = STD or operation = CALL or operation = INT) and immediate_value /= '1') else '0' ;
+    memRead  <= '1' when ((operation = LDD or operation = POP or operation = RET or operation = RTI) and exception_flag = "00" and immediate_value /= '1') else '0' ;
+    memWrite <= '1' when ((operation = PUSH or operation = STD or operation = CALL or operation = INT) and exception_flag = "00" and immediate_value /= '1') else '0' ;
     inPort   <= '1' when (operation = IN_OP and immediate_value /= '1')  else '0';
     outPort  <= '1' when (operation = OUT_OP and immediate_value /= '1') else '0';
 
     regFileWrite_en <= '1' when ((operation = NOT_OP or operation = INC or operation = IN_OP or operation = MOV or operation = ADD
-     or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD) and immediate_value /= '1') else '0';
+     or operation = SUB or operation = AND_OP or operation = IADD or operation = LDM or operation = POP or operation = LDD ) and exception_flag = "00" and immediate_value /= '1') else '0';
 
     imm_value   <= '1' when ((operation = LDD or operation = STD or operation = LDM or operation = IADD)and immediate_value /= '1') else '0';
 
@@ -176,24 +176,24 @@ begin
 
 
 
-    alu_selector <= "01110" when (operation = SETC and immediate_value /= '1') else
-        "00001" when (operation = NOT_OP and immediate_value /= '1') else
-        "00010" when (operation = INC and immediate_value /= '1')    else
-        "00011" when (operation = ADD and immediate_value /= '1')    else
-        "00100" when (operation = LDD and immediate_value /= '1') else
-        "00101" when (operation = SUB and immediate_value /= '1')    else
-        "00110" when (operation = AND_OP and immediate_value /= '1') else
-        "00111" when (operation = IADD and immediate_value /= '1')   else
-        "01000" when (operation = IN_OP and immediate_value /= '1')  else
-        "01001" when (operation = JC and immediate_value /= '1')     else
-        "01010" when (operation = JZ and immediate_value /= '1')     else
-        "01011" when (operation = JN and immediate_value /= '1')     else
-        "01100" when ((operation = RET or operation = RTI) and immediate_value /= '1') else
-        "01111" when (operation = OUT_OP and immediate_value /= '1') else
-        "10001" when (operation = LDM and immediate_value /= '1') else
-        "10010" when (operation = STD and immediate_value /= '1') else
-        "10011" when (operation = MOV and immediate_value /= '1') else
-        "10100" when (operation = PUSH and immediate_value /= '1') else
+    alu_selector <= "01110" when (operation = SETC and exception_flag = "00" and immediate_value /= '1') else
+        "00001" when (operation = NOT_OP and exception_flag = "00" and immediate_value /= '1') else
+        "00010" when (operation = INC and exception_flag = "00" and immediate_value /= '1')    else
+        "00011" when (operation = ADD and exception_flag = "00" and immediate_value /= '1')    else
+        "00100" when (operation = LDD and exception_flag = "00" and immediate_value /= '1') else
+        "00101" when (operation = SUB and exception_flag = "00" and immediate_value /= '1')    else
+        "00110" when (operation = AND_OP and exception_flag = "00" and immediate_value /= '1') else
+        "00111" when (operation = IADD and exception_flag = "00" and immediate_value /= '1')   else
+        "01000" when (operation = IN_OP and exception_flag = "00" and immediate_value /= '1')  else
+        "01001" when (operation = JC and exception_flag = "00" and immediate_value /= '1')     else
+        "01010" when (operation = JZ and exception_flag = "00" and immediate_value /= '1')     else
+        "01011" when (operation = JN and exception_flag = "00" and immediate_value /= '1')     else
+        "01100" when ((operation = RET or operation = RTI) and exception_flag = "00" and immediate_value /= '1') else
+        "01111" when (operation = OUT_OP and exception_flag = "00" and immediate_value /= '1') else
+        "10001" when (operation = LDM and exception_flag = "00" and immediate_value /= '1') else
+        "10010" when (operation = STD and exception_flag = "00" and immediate_value /= '1') else
+        "10011" when (operation = MOV and exception_flag = "00" and immediate_value /= '1') else
+        "10100" when (operation = PUSH and exception_flag = "00" and immediate_value /= '1') else
         "01101";
 
         exception_selector <= '0' when (exception_flag = "01") else
@@ -211,7 +211,7 @@ begin
         fetch_flush  <= '1' when (reset_in = '1' or (operation = INT and immediate_value /= '1') or exception_flag /= "00" or temp_R = '1'or temp_I = '1' or 
                          temp_E='1' or temp_RI /= 0 or temp_RET /= 0 or temp_C /= 0 or temp_J /= 0 or branch_signal='1') else '0';
         decode_flush <= '1' when (reset_in = '1' or  branch_signal='1' or immediate_value = '1' or exception_flag /= "00" ) else '0';
-        memory_flush <= '1' when (reset_in = '1')  else '0';
+        memory_flush <= '1' when (reset_in = '1' or exception_flag /= "00")  else '0';
         WB_flush     <= '1' when (reset_in = '1')  else '0';
         interrupt    <= '1' when (operation = INT and immediate_value /= '1') else '0';
             
