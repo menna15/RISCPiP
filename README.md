@@ -21,4 +21,6 @@ RISC 5-stage 16-bit piplined processor with harvard architecture. And assembler 
 more detailed document for decoding the instructions [click](https://github.com/menna15/RISCPiP/blob/main/CMP301_Fall_2021_Project.pdf)
 
 ### :art: Schema
-![labeled_Schema](https://user-images.githubusercontent.com/49396399/153276671-358fe7a0-e7c9-4147-8690-72e66b8d7b37.png)
+![labeled_Schema](https://user-images.githubusercontent.com/49396399/153286042-c361888a-12d7-493c-ac52-9a7576ab7c2f.png)
+
+
