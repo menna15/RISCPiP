@@ -15,8 +15,8 @@ RISC 5-stage 16-bit piplined processor with harvard architecture. And assembler 
 
 ### Instruction
 | 5-bits Opcode | 3-bit src1 register address |  3-bit src2 register address |  3-bit dst register address | 2-bit (not yet used) |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|
 more detailed document for decoding the instructions [click](https://github.com/menna15/RISCPiP/blob/main/CMP301_Fall_2021_Project.pdf)
 
-### Schema
+### :art: Schema
 ![labeled_Schema](https://user-images.githubusercontent.com/49396399/153276671-358fe7a0-e7c9-4147-8690-72e66b8d7b37.png)
