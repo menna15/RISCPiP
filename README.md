@@ -1,4 +1,4 @@
-### RISCPiP
+### :desktop_computer: RISCPiP
 RISC 5-stage 16-bit piplined processor with harvard architecture. And assembler to decode instructions to machine code.
 
 ### 📋 Instruction Set
@@ -13,11 +13,11 @@ RISC 5-stage 16-bit piplined processor with harvard architecture. And assembler 
 |  IN Rdst |   - | -  |  INT index |
 | - |  - | -  |  RTI (for interrupt)|
 
-### Instruction
+### :fountain_pen: Instruction
 | 5-bits Opcode | 3-bit src1 register address |  3-bit src2 register address |  3-bit dst register address | 2-bit (not yet used) |
 |---            |---                          |---                           |---                          |---                   |
 
-### Instructions' Document
+### :fountain_pen: Instructions' Document
 more detailed document for decoding the instructions [click](https://github.com/menna15/RISCPiP/blob/main/CMP301_Fall_2021_Project.pdf)
 
 ### :art: Schema
