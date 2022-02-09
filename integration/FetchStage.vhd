@@ -85,17 +85,17 @@ ARCHITECTURE FS_Arch OF FetchStage IS
        SIGNAL Carry_Flag: STD_LOGIC;
        SIGNAL Memory_mux_out:  STD_LOGIC_VECTOR(31 DOWNTO 0);
        SIGNAL memory_out : STD_LOGIC_VECTOR(31 DOWNTO 0);
-       SIGNAL PC_Enable: STD_LOGIC;
+       SIGNAL PC_Enable: STD_LOGIC_VECTOR(31 DOWNTO 0);
        SIGNAL index_extended : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
        
 BEGIN
        memory_out <=inst2&inst1;
        index_extended<="0000000000000000" & index;
-       PC_Enable<=(not freeze_pc);
-       PCReg : PCounter PORT MAP(PC_value, clk, reset,PC_Enable, pre_pc);
+       PC_Enable<= "0000000000000000000000000000000" & (not freeze_pc);
+       PCReg : PCounter PORT MAP(PC_value, clk, reset,'1', pre_pc);
        memory : InstMEM PORT MAP(clk,Do32,Memory_mux_out, inst1,inst2);
-       Adder_Mux1 : mux2 GENERIC MAP(size => 32) PORT MAP(std_logic_vector(to_unsigned(1,32)), std_logic_vector(to_unsigned(6,32)), Int_signal ,Adder_Mux1_out );
+       Adder_Mux1 : mux2 GENERIC MAP(size => 32) PORT MAP(PC_Enable, std_logic_vector(to_unsigned(6,32)), Int_signal ,Adder_Mux1_out );
        Adder_Mux2 : mux2 GENERIC MAP(size => 32) PORT MAP(pre_pc, index_extended, Int_signal ,Adder_Mux2_out );
        PC_FullAdder: Full_adder GENERIC MAP(size => 32) PORT MAP(Adder_Mux1_out ,Adder_Mux2_out, '0' ,Adder_out, Carry_Flag);
        Fetched_Address_M: Mux4  GENERIC MAP(size => 32) PORT MAP(std_logic_vector(to_unsigned(0,32)),std_logic_vector(to_unsigned(2,32)),std_logic_vector(to_unsigned(4,32)),Adder_out, Address_signal(0), Address_signal(1),Fetched_Address);
